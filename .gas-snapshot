@@ -1,1 +1,3 @@
-LibBytesTest:testCopyFuzz(bytes) (runs: 256, μ: 13044, ~: 9906)
+LibBytesTest:testCopyFuzz(bytes,uint256) (runs: 256, μ: 13013, ~: 10047)
+LibBytesTest:testCopyMaxSuffixFuzz(bytes) (runs: 256, μ: 13177, ~: 10039)
+LibBytesTest:testCopySimple() (gas: 1764)
