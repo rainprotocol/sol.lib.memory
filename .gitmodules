@@ -1,0 +1,3 @@
+[submodule "lib/qakit.foundry"]
+	path = lib/qakit.foundry
+	url = https://github.com/rainprotocol/qakit.foundry
