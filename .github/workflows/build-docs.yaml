@@ -13,7 +13,7 @@ jobs:
         with:
           version: nightly
       - name: Generate docs
-        run: forge docs -b
+        run: forge doc -b
       - name: Deploy to GitHub Pages
         if: success()
         uses: crazy-max/ghaction-github-pages@v3
