@@ -4,10 +4,14 @@ on: push
 
 jobs:
   publish:
-    runs-on: ghcr.io/foundry-rs/foundry:latest
+    runs-on: ubuntu
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
       - name: Generate docs
         run: forge docs -b
       - name: Deploy to GitHub Pages
