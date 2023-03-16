@@ -13,8 +13,7 @@ library LibBytes {
             } { mstore(outputCursor_, mload(inputCursor_)) }
 
             if gt(remaining_, 0) {
-                // Slither false positive here due to the variable shift of a
-                // constant value to create a mask.
+                //slither-disable-next-line incorrect-shift
                 let mask_ := shr(mul(remaining_, 8), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)
                 // preserve existing bytes
                 mstore(
