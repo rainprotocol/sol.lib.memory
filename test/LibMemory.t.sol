@@ -2,10 +2,10 @@
 pragma solidity ^0.8.16;
 
 import "forge-std/Test.sol";
-import "../src/LibBytes.sol";
+import "../src/LibMemory.sol";
 
 contract LibBytesTest is Test {
-    using LibBytes for bytes;
+    using LibMemory for bytes;
 
     function testCopyFuzz(bytes memory source_, uint256 suffix_) public {
         bytes memory target_ = new bytes(source_.length);
@@ -14,7 +14,7 @@ contract LibBytesTest is Test {
             end_ := add(add(target_, 0x20), mload(target_))
             mstore(end_, suffix_)
         }
-        LibBytes.unsafeCopyBytesTo(source_.cursor(), target_.cursor(), source_.length);
+        LibMemory.unsafeCopyBytesTo(source_.dataPointer(), target_.dataPointer(), source_.length);
         assertEq(source_, target_);
         uint256 suffixAfter_;
         assembly {

@@ -8,3 +8,10 @@ libs = ['lib']
 solc = "0.8.16"
 optimizer = true
 optimizer_runs = 100000
+via_ir = true
+
+[profile.default.model_checker]
+contracts = {'src/LibMemory.sol' = ['LibMemory']}
+engine = 'chc'
+timeout = 10000
+targets = ['assert', 'underflow', 'overflow', 'divByZero', 'constantCondition', 'popEmptyArray', 'outOfBounds']
