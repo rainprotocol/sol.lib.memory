@@ -8,7 +8,8 @@ libs = ['lib']
 solc = "0.8.16"
 optimizer = true
 optimizer_runs = 100000
-via_ir = true
+
+fuzz.runs = 1024
 
 [profile.default.model_checker]
 contracts = {'src/LibMemory.sol' = ['LibMemory']}

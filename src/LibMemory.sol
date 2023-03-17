@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: CAL
 pragma solidity ^0.8.16;
 
+/// Thrown when asked to truncate data to a longer length.
+/// @param length Actual bytes length.
+/// @param truncate Attempted truncation length.
+error TruncateError(uint256 length, uint256 truncate);
+
 type Pointer is uint256;
 
 /// @title LibMemory
@@ -27,7 +32,7 @@ library LibMemory {
                 target_ := add(target_, 0x20)
             } { mstore(target_, mload(source_)) }
 
-            if gt(length_, 0) {
+            if iszero(iszero(length_)) {
                 //slither-disable-next-line incorrect-shift
                 let mask_ := shr(mul(length_, 8), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)
                 // preserve existing bytes
@@ -47,6 +52,39 @@ library LibMemory {
     function dataPointer(bytes memory data_) internal pure returns (Pointer pointer_) {
         assembly ("memory-safe") {
             pointer_ := add(data_, 0x20)
+        }
+    }
+
+    function truncate(bytes memory bytes_, uint256 length_) internal pure {
+        if (bytes_.length < length_) {
+            revert TruncateError(bytes_.length, length_);
+        }
+        assembly ("memory-safe") {
+            mstore(bytes_, length_)
+        }
+    }
+
+    function asBytes(Pointer pointer_) internal pure returns (bytes memory bytes_) {
+        assembly ("memory-safe") {
+            bytes_ := pointer_
+        }
+    }
+
+    function asPointer(bytes memory bytes_) internal pure returns (Pointer pointer_) {
+        assembly ("memory-safe") {
+            pointer_ := bytes_
+        }
+    }
+
+    function addBytes(Pointer pointer_, uint256 bytes_) internal pure returns (Pointer) {
+        unchecked {
+            return Pointer.wrap(Pointer.unwrap(pointer_) + bytes_);
+        }
+    }
+
+    function addWords(Pointer pointer_, uint256 words_) internal pure returns (Pointer) {
+        unchecked {
+            return Pointer.wrap(Pointer.unwrap(pointer_) + (words_ * 0x20));
         }
     }
 }
