@@ -4,7 +4,7 @@ pragma solidity ^0.8.16;
 import "forge-std/Test.sol";
 import "../src/LibMemory.sol";
 
-contract LibBytesTest is Test {
+contract LibMemoryTest is Test {
     // Just fuzz to get some things in memory.
     function testMemoryIsAlignedFuzz(bytes memory, uint256 offset_) public {
         vm.assume(offset_ % 0x20 != 0);
