@@ -8,6 +8,8 @@ import "./LibUint256ArraySlow.sol";
 contract LibUint256ArrayArrayFromTest is Test {
     using LibUint256Array for uint256;
     using LibUint256ArraySlow for uint256;
+    using LibUint256Array for uint256[];
+    using LibUint256ArraySlow for uint256[];
 
     function testArrayFromA(uint256 a_) public {
         assertEq(a_.arrayFrom(), a_.arrayFromSlow());
@@ -103,5 +105,23 @@ contract LibUint256ArrayArrayFromTest is Test {
 
     function testArrayFromABTailGasSlow0() public pure {
         uint256(1).arrayFromSlow(2, uint256(3).arrayFrom(4, 5));
+    }
+
+    function testArrayFromMatrix(uint256[] memory a_) public {
+        uint256[][] memory matrix_ = a_.matrixFrom();
+        uint256[][] memory matrixSlow_ = a_.matrixFromSlow();
+        assertEq(matrix_.length, 1);
+        assertEq(matrix_.length, matrixSlow_.length);
+        for (uint256 i_ = 0; i_ < matrix_.length; i_++) {
+            assertEq(matrix_[i_], matrixSlow_[i_]);
+        }
+    }
+
+    function testArrayFromMatrixGas0() public pure {
+        uint256(1).arrayFrom().matrixFrom();
+    }
+
+    function testArrayFromMatrixGasSlow0() public pure {
+        uint256(1).arrayFrom().matrixFromSlow();
     }
 }

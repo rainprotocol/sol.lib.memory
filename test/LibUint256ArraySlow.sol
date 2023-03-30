@@ -79,4 +79,10 @@ library LibUint256ArraySlow {
         }
         return array_;
     }
+
+    function matrixFromSlow(uint256[] memory a_) internal pure returns (uint256[][] memory) {
+        uint256[][] memory matrix_ = new uint256[][](1);
+        matrix_[0] = a_;
+        return matrix_;
+    }
 }
