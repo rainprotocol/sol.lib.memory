@@ -86,10 +86,22 @@ contract LibUint256ArrayArrayFromTest is Test {
     }
 
     function testArrayFromATailGas0() public pure {
-        uint256(1).arrayFrom(uint256(2).arrayFrom());
+        uint256(1).arrayFrom(uint256(2).arrayFrom(3, 4));
     }
 
     function testArrayFromATailGasSlow0() public pure {
-        uint256(1).arrayFromSlow(uint256(2).arrayFrom());
+        uint256(1).arrayFromSlow(uint256(2).arrayFrom(3, 4));
+    }
+
+    function testArrayFromABTail(uint256 a_, uint256 b_, uint256[] memory tail_) public {
+        assertEq(a_.arrayFrom(b_, tail_), a_.arrayFromSlow(b_, tail_));
+    }
+
+    function testArrayFromABTailGas0() public pure {
+        uint256(1).arrayFrom(2, uint256(3).arrayFrom(4, 5));
+    }
+
+    function testArrayFromABTailGasSlow0() public pure {
+        uint256(1).arrayFromSlow(2, uint256(3).arrayFrom(4, 5));
     }
 }
