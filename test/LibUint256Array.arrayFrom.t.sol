@@ -4,6 +4,7 @@ pragma solidity ^0.8.16;
 import "forge-std/Test.sol";
 import "../src/LibUint256Array.sol";
 import "./LibUint256ArraySlow.sol";
+import "../src/LibMemory.sol";
 
 contract LibUint256ArrayArrayFromTest is Test {
     using LibUint256Array for uint256;
@@ -12,7 +13,9 @@ contract LibUint256ArrayArrayFromTest is Test {
     using LibUint256ArraySlow for uint256[];
 
     function testArrayFromA(uint256 a_) public {
-        assertEq(a_.arrayFrom(), a_.arrayFromSlow());
+        uint256[] memory actual_ = a_.arrayFrom();
+        assertTrue(LibMemory.memoryIsAligned());
+        assertEq(actual_, a_.arrayFromSlow());
     }
 
     function testArrayFromAGas0() public pure {
@@ -24,7 +27,9 @@ contract LibUint256ArrayArrayFromTest is Test {
     }
 
     function testArrayFromAB(uint256 a_, uint256 b_) public {
-        assertEq(a_.arrayFrom(b_), a_.arrayFromSlow(b_));
+        uint256[] memory actual_ = a_.arrayFrom(b_);
+        assertTrue(LibMemory.memoryIsAligned());
+        assertEq(actual_, a_.arrayFromSlow(b_));
     }
 
     function testArrayFromABGas0() public pure {
@@ -36,7 +41,9 @@ contract LibUint256ArrayArrayFromTest is Test {
     }
 
     function testArrayFromABC(uint256 a_, uint256 b_, uint256 c_) public {
-        assertEq(a_.arrayFrom(b_, c_), a_.arrayFromSlow(b_, c_));
+        uint256[] memory actual_ = a_.arrayFrom(b_, c_);
+        assertTrue(LibMemory.memoryIsAligned());
+        assertEq(actual_, a_.arrayFromSlow(b_, c_));
     }
 
     function testArrayFromABCGas0() public pure {
@@ -48,7 +55,9 @@ contract LibUint256ArrayArrayFromTest is Test {
     }
 
     function testArrayFromABCD(uint256 a_, uint256 b_, uint256 c_, uint256 d_) public {
-        assertEq(a_.arrayFrom(b_, c_, d_), a_.arrayFromSlow(b_, c_, d_));
+        uint256[] memory actual_ = a_.arrayFrom(b_, c_, d_);
+        assertTrue(LibMemory.memoryIsAligned());
+        assertEq(actual_, a_.arrayFromSlow(b_, c_, d_));
     }
 
     function testArrayFromABCDGas0() public pure {
@@ -60,7 +69,9 @@ contract LibUint256ArrayArrayFromTest is Test {
     }
 
     function testArrayFromABCDE(uint256 a_, uint256 b_, uint256 c_, uint256 d_, uint256 e_) public {
-        assertEq(a_.arrayFrom(b_, c_, d_, e_), a_.arrayFromSlow(b_, c_, d_, e_));
+        uint256[] memory actual_ = a_.arrayFrom(b_, c_, d_, e_);
+        assertTrue(LibMemory.memoryIsAligned());
+        assertEq(actual_, a_.arrayFromSlow(b_, c_, d_, e_));
     }
 
     function testArrayFromABCDEGas0() public pure {
@@ -72,7 +83,9 @@ contract LibUint256ArrayArrayFromTest is Test {
     }
 
     function testArrayFromABCDEF(uint256 a_, uint256 b_, uint256 c_, uint256 d_, uint256 e_, uint256 f_) public {
-        assertEq(a_.arrayFrom(b_, c_, d_, e_, f_), a_.arrayFromSlow(b_, c_, d_, e_, f_));
+        uint256[] memory actual_ = a_.arrayFrom(b_, c_, d_, e_, f_);
+        assertTrue(LibMemory.memoryIsAligned());
+        assertEq(actual_, a_.arrayFromSlow(b_, c_, d_, e_, f_));
     }
 
     function testArrayFromABCDEFGas0() public pure {
@@ -84,7 +97,9 @@ contract LibUint256ArrayArrayFromTest is Test {
     }
 
     function testArrayFromATail(uint256 a_, uint256[] memory tail_) public {
-        assertEq(a_.arrayFrom(tail_), a_.arrayFromSlow(tail_));
+        uint256[] memory actual_ = a_.arrayFrom(tail_);
+        assertTrue(LibMemory.memoryIsAligned());
+        assertEq(actual_, a_.arrayFromSlow(tail_));
     }
 
     function testArrayFromATailGas0() public pure {
@@ -96,7 +111,9 @@ contract LibUint256ArrayArrayFromTest is Test {
     }
 
     function testArrayFromABTail(uint256 a_, uint256 b_, uint256[] memory tail_) public {
-        assertEq(a_.arrayFrom(b_, tail_), a_.arrayFromSlow(b_, tail_));
+        uint256[] memory actual_ = a_.arrayFrom(b_, tail_);
+        assertTrue(LibMemory.memoryIsAligned());
+        assertEq(actual_, a_.arrayFromSlow(b_, tail_));
     }
 
     function testArrayFromABTailGas0() public pure {
@@ -109,6 +126,7 @@ contract LibUint256ArrayArrayFromTest is Test {
 
     function testArrayFromMatrix(uint256[] memory a_) public {
         uint256[][] memory matrix_ = a_.matrixFrom();
+        assertTrue(LibMemory.memoryIsAligned());
         uint256[][] memory matrixSlow_ = a_.matrixFromSlow();
         assertEq(matrix_.length, 1);
         assertEq(matrix_.length, matrixSlow_.length);

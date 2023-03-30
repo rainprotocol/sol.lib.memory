@@ -85,4 +85,24 @@ library LibUint256ArraySlow {
         matrix_[0] = a_;
         return matrix_;
     }
+
+    function truncateSlow(uint256[] memory a_, uint256 newLength_) internal pure returns (uint256[] memory) {
+        uint256[] memory b_ = new uint256[](newLength_);
+        for (uint256 i_ = 0; i_ < newLength_; i_++) {
+            b_[i_] = a_[i_];
+        }
+        return b_;
+    }
+
+    function extendSlow(uint256[] memory a_, uint256[] memory b_) internal pure returns (uint256[] memory) {
+        uint256[] memory c_ = new uint256[](a_.length + b_.length);
+        uint256 i_ = 0;
+        for (; i_ < a_.length; i_++) {
+            c_[i_] = a_[i_];
+        }
+        for (; i_ < a_.length + b_.length; i_++) {
+            c_[i_] = b_[i_ - a_.length];
+        }
+        return c_;
+    }
 }

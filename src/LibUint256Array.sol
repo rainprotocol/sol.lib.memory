@@ -149,9 +149,7 @@ library LibUint256Array {
             } lt(outputCursor_, outputEnd_) {
                 outputCursor_ := add(outputCursor_, 0x20)
                 inputCursor_ := add(inputCursor_, 0x20)
-            } {
-                mstore(outputCursor_, mload(inputCursor_))
-            }
+            } { mstore(outputCursor_, mload(inputCursor_)) }
         }
         return array_;
     }
@@ -181,9 +179,7 @@ library LibUint256Array {
             } lt(outputCursor_, outputEnd_) {
                 outputCursor_ := add(outputCursor_, 0x20)
                 inputCursor_ := add(inputCursor_, 0x20)
-            } {
-                mstore(outputCursor_, mload(inputCursor_))
-            }
+            } { mstore(outputCursor_, mload(inputCursor_)) }
         }
         return array_;
     }
