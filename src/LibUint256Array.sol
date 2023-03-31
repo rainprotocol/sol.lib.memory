@@ -233,6 +233,7 @@ library LibUint256Array {
     /// @param e_ The integer array that extends `base_`.
     function unsafeExtend(uint256[] memory b_, uint256[] memory e_) internal pure returns (uint256[] memory final_) {
         assembly ("memory-safe") {
+            //slither-disable-next-line naming-convention
             function extendInline(base_, extend_) -> baseAfter_ {
                 let outputCursor_ := mload(0x40)
                 let baseLength_ := mload(base_)
