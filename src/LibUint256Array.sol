@@ -229,31 +229,93 @@ library LibUint256Array {
     /// to `extend` arrays that were allocated in the same lexical scope and you
     /// WILL see subtle errors that revert transactions otherwise.
     /// i.e. the `new` keyword MUST appear in the same code block as `extend`.
-    /// @param base_ The base integer array that will be extended by `extend_`.
-    /// @param extend_ The integer array that extends `base_`.
-    function extend(uint256[] memory base_, uint256[] memory extend_) internal pure {
-        uint256 freeMemoryPointer_;
+    /// @param b_ The base integer array that will be extended by `extend_`.
+    /// @param e_ The integer array that extends `base_`.
+    function extend(uint256[] memory b_, uint256[] memory e_) internal pure {
         assembly ("memory-safe") {
-            // Solidity stores free memory pointer at 0x40
-            freeMemoryPointer_ := mload(0x40)
-            let baseLength_ := mload(base_)
-            let extendLength_ := mload(extend_)
+            function extendInline(base_, extend_) -> baseAfter_ {
+                let outputCursor_ := mload(0x40)
+                let baseLength_ := mload(base_)
+                let baseEnd_ := add(base_, add(0x20, mul(baseLength_, 0x20)))
 
-            // The freeMemoryPointer_ does NOT point to the end of `base_` so
-            // it is NOT safe to copy `extend_` over the top of already
-            // allocated memory. This happens whenever some memory is allocated
-            // after `base_` is allocated but before `extend` is called.
-            if gt(freeMemoryPointer_, add(base_, add(0x20, mul(0x20, baseLength_)))) { revert(0, 0) }
+                // If base is NOT the last thing in allocated memory, allocate,
+                // copy and recurse.
+                switch eq(outputCursor_, baseEnd_)
+                case 0 {
+                    let newBase_ := outputCursor_
+                    let newBaseEnd_ := add(newBase_, sub(baseEnd_, base_))
+                    mstore(0x40, newBaseEnd_)
+                    // mstore(newBase_, baseLength_)
+                    for {
+                        let inputCursor_ := base_
+                    } lt(outputCursor_, newBaseEnd_) {
+                        inputCursor_ := add(inputCursor_, 0x20)
+                        outputCursor_ := add(outputCursor_, 0x20)
+                    } {
+                        mstore(outputCursor_, mload(inputCursor_))
+                    }
 
-            // Move the free memory pointer by the length of extend_, excluding
-            // the length slot of extend as that will NOT be copied to `base_`.
-            mstore(0x40, add(freeMemoryPointer_, mul(0x20, extendLength_)))
+                    baseAfter_ := extendInline(newBase_, extend_)
+                }
+                case 1 {
+                    let totalLength_ := add(baseLength_, mload(extend_))
+                    let outputEnd_ := add(base_, add(0x20, mul(totalLength_, 0x20)))
+                    mstore(base_, totalLength_)
+                    mstore(0x40, outputEnd_)
+                    for {
+                        let inputCursor_ := add(extend_, 0x20)
+                    } lt(outputCursor_, outputEnd_) {
+                        inputCursor_ := add(inputCursor_, 0x20)
+                        outputCursor_ := add(outputCursor_, 0x20)
+                    } {
+                        mstore(outputCursor_, mload(inputCursor_))
+                    }
 
-            // Update the length of base to be the length of base+extend.
-            mstore(base_, add(baseLength_, extendLength_))
+                    baseAfter_ := base_
+                }
+            }
+
+            b_ := extendInline(b_, e_)
+
+            // let baseLength_ := mload(base_)
+            // let baseEnd_ := add(0x20, mul(baseLength_, 0x20))
+            // let extendedLength_ := add(baseLength_, mload(extend_))
+            // let freeMemoryPointer_ := mload(0x40)
+
+            // // Optimistically update the base length, assuming we won't need an
+            // // expensive rellocation below. This keeps branching logic to a
+            // // minimum in the happy case.
+            // mstore(base_, extendedLength_)
+
+            // // If the base is not the last thing in allocated memory then we have
+            // // to allocate and copy the base before we can extend it.
+            // if iszero(eq(freeMemoryPointer_, baseEnd_)) {
+
+            // }
         }
 
-        unsafeCopyValuesTo(extend_, freeMemoryPointer_);
+        // uint256 freeMemoryPointer_;
+        // assembly ("memory-safe") {
+        //     // Solidity stores free memory pointer at 0x40
+        //     freeMemoryPointer_ := mload(0x40)
+        //     let baseLength_ := mload(base_)
+        //     let extendLength_ := mload(extend_)
+
+        //     // The freeMemoryPointer_ does NOT point to the end of `base_` so
+        //     // it is NOT safe to copy `extend_` over the top of already
+        //     // allocated memory. This happens whenever some memory is allocated
+        //     // after `base_` is allocated but before `extend` is called.
+        //     if gt(freeMemoryPointer_, add(base_, add(0x20, mul(0x20, baseLength_)))) { revert(0, 0) }
+
+        //     // Move the free memory pointer by the length of extend_, excluding
+        //     // the length slot of extend as that will NOT be copied to `base_`.
+        //     mstore(0x40, add(freeMemoryPointer_, mul(0x20, extendLength_)))
+
+        //     // Update the length of base to be the length of base+extend.
+        //     mstore(base_, add(baseLength_, extendLength_))
+        // }
+
+        // unsafeCopyValuesTo(extend_, freeMemoryPointer_);
     }
 
     /// Copies `inputs_` to `outputCursor_` with NO attempt to check that this

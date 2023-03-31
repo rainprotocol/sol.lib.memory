@@ -32,6 +32,19 @@ contract LibUint256ArrayExtendTest is Test {
         assertEq(b_, LibUint256ArraySlow.extendSlow(c_, a_));
     }
 
+    function testExtendAllocateDebug() public {
+        uint256[] memory a_ = new uint256[](3);
+        uint256[] memory b_ = new uint256[](4);
+        a_[0] = 0x10;
+        a_[1] = 0x20;
+        a_[2] = 0x30;
+        b_[0] = 0x40;
+        b_[1] = 0x50;
+        b_[2] = 0x60;
+        b_[3] = 0x70;
+        testExtendAllocate(a_, b_);
+    }
+
     // function testTruncateError(uint256[] memory a_, uint256 newLength_) public {
     //     vm.assume(newLength_ > a_.length);
     //     vm.expectRevert(abi.encodeWithSelector(OutOfBoundsTruncate.selector, a_.length, newLength_));
