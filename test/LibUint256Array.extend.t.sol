@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CAL
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.18;
 
 import "forge-std/Test.sol";
 import "../src/LibMemory.sol";
@@ -14,7 +14,7 @@ contract LibUint256ArrayExtendTest is Test {
         for (uint256 i_; i_ < a_.length; i_++) {
             c_[i_] = a_[i_];
         }
-        LibUint256Array.extend(c_, b_);
+        c_ = LibUint256Array.unsafeExtend(c_, b_);
         assertTrue(LibMemory.memoryIsAligned());
 
         assertEq(c_, LibUint256ArraySlow.extendSlow(a_, b_));
@@ -26,7 +26,7 @@ contract LibUint256ArrayExtendTest is Test {
         for (uint256 i_; i_ < b_.length; i_++) {
             c_[i_] = b_[i_];
         }
-        LibUint256Array.extend(b_, a_);
+        b_ = LibUint256Array.unsafeExtend(b_, a_);
         assertTrue(LibMemory.memoryIsAligned());
 
         assertEq(b_, LibUint256ArraySlow.extendSlow(c_, a_));
@@ -44,18 +44,4 @@ contract LibUint256ArrayExtendTest is Test {
         b_[3] = 0x70;
         testExtendAllocate(a_, b_);
     }
-
-    // function testTruncateError(uint256[] memory a_, uint256 newLength_) public {
-    //     vm.assume(newLength_ > a_.length);
-    //     vm.expectRevert(abi.encodeWithSelector(OutOfBoundsTruncate.selector, a_.length, newLength_));
-    //     LibUint256Array.truncate(a_, newLength_);
-    // }
-
-    // function testTruncateGas0() public {
-    //     LibUint256Array.truncate(LibUint256Array.arrayFrom(1, 2, 3), 1);
-    // }
-
-    // function testTruncateGas1() public {
-    //     LibUint256Array.truncate(LibUint256Array.arrayFrom(1, 2, 3), 0);
-    // }
 }
