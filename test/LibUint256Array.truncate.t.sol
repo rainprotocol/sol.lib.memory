@@ -28,11 +28,11 @@ contract LibUint256ArrayTruncateTest is Test {
         LibUint256Array.truncate(a_, newLength_);
     }
 
-    function testTruncateGas0() public {
+    function testTruncateGas0() public pure {
         LibUint256Array.truncate(LibUint256Array.arrayFrom(1, 2, 3), 1);
     }
 
-    function testTruncateGas1() public {
+    function testTruncateGas1() public pure {
         LibUint256Array.truncate(LibUint256Array.arrayFrom(1, 2, 3), 0);
     }
 }
