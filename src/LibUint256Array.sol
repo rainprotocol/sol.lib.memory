@@ -233,6 +233,9 @@ library LibUint256Array {
     /// @param e_ The integer array that extends `base_`.
     function unsafeExtend(uint256[] memory b_, uint256[] memory e_) internal pure returns (uint256[] memory final_) {
         assembly ("memory-safe") {
+            // Slither doesn't recognise assembly function names as mixed case
+            // even if they are.
+            // https://github.com/crytic/slither/issues/1815
             //slither-disable-next-line naming-convention
             function extendInline(base_, extend_) -> baseAfter_ {
                 let outputCursor_ := mload(0x40)
