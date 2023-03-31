@@ -40,4 +40,26 @@ library LibMemCpy {
             }
         }
     }
+
+    /// Copies `length_` `uint256` values starting from `source_` to `target_`
+    /// with NO attempt to check that this is safe to do so. The caller MUST
+    /// ensure that there exists allocated memory at `target_` in which it is
+    /// safe and appropriate to copy `length_ * 32` bytes to. Anything that was
+    /// already written to memory at `[target_:target_+(length_ * 32 bytes)]`
+    /// will be overwritten.
+    /// There is no return value as memory is modified directly.
+    /// @param source_ The starting position in memory that data will be copied
+    /// from.
+    /// @param target_ The starting position in memory that data will be copied
+    /// to.
+    /// @param length_ The number of 32 byte (i.e. `uint256`) words that will
+    /// be copied.
+    function unsafeCopyWordsTo(Pointer source_, Pointer target_, uint256 length_) internal pure {
+        assembly ("memory-safe") {
+            for { let end_ := add(source_, mul(0x20, length_)) } lt(source_, end_) {
+                source_ := add(source_, 0x20)
+                target_ := add(target_, 0x20)
+            } { mstore(target_, mload(source_)) }
+        }
+    }
 }

@@ -6,7 +6,7 @@ import "../src/LibMemCpy.sol";
 import "../src/LibBytes.sol";
 import "../src/LibPointer.sol";
 
-contract LibMemCpyTest is Test {
+contract LibMemCpyBytesTest is Test {
     using LibPointer for Pointer;
     using LibBytes for bytes;
 
