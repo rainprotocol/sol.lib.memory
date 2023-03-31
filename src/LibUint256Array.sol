@@ -216,21 +216,32 @@ library LibUint256Array {
         }
     }
 
-    /// Extends `base_` with `extend_` by allocating additional `extend_.length`
-    /// uints onto `base_`. Reverts if some other memory has been allocated
-    /// after `base_` already, in which case it is NOT safe to copy inline.
-    /// If `base_` is large this MAY be significantly more efficient than
-    /// allocating `base_.length + extend_.length` for an entirely new array and
-    /// copying both `base_` and `extend_` into the new array one item at a
+    /// Extends `base_` with `extend_` by allocating only an additional
+    /// `extend_.length` words onto `base_` and copying only `extend_` if
+    /// possible. If `base_` is large this MAY be significantly more efficient
+    /// than allocating `base_.length + extend_.length` for an entirely new array
+    /// and copying both `base_` and `extend_` into the new array one item at a
     /// time in Solidity.
-    /// The Solidity compiler MAY rearrange sibling statements in a code block
-    /// EVEN IF THE OPTIMIZER IS DISABLED such that it becomes unsafe to use
-    /// `extend` for memory allocated in different code blocks. It is ONLY safe
-    /// to `extend` arrays that were allocated in the same lexical scope and you
-    /// WILL see subtle errors that revert transactions otherwise.
-    /// i.e. the `new` keyword MUST appear in the same code block as `extend`.
+    ///
+    /// The efficient version of extension is only possible if the free memory
+    /// pointer sits at the end of the base array at the moment of extension. If
+    /// there is allocated memory after the end of base then extension will
+    /// require copying both the base and extend arays to a new region of memory.
+    /// The caller is responsible for optimising code paths to avoid additional
+    /// allocations.
+    ///
+    /// This function is UNSAFE because the base array IS MUTATED DIRECTLY by
+    /// some code paths AND THE FINAL RETURN ARRAY MAY POINT TO THE SAME REGION
+    /// OF MEMORY. It is NOT POSSIBLE to reliably see this behaviour from the
+    /// caller in all cases as the Solidity compiler optimisations may switch the
+    /// caller between the allocating and non-allocating logic due to subtle
+    /// optimisation reasons. To use this function safely THE CALLER MUST NOT USE
+    /// THE BASE ARRAY AND MUST USE THE RETURNED ARRAY ONLY. It is safe to use
+    /// the extend array after calling this function as it is never mutated, it
+    /// is only copied from.
+    ///
     /// @param b_ The base integer array that will be extended by `extend_`.
-    /// @param e_ The integer array that extends `base_`.
+    /// @param e_ The extend integer array that extends `base_`.
     function unsafeExtend(uint256[] memory b_, uint256[] memory e_) internal pure returns (uint256[] memory final_) {
         assembly ("memory-safe") {
             // Slither doesn't recognise assembly function names as mixed case
