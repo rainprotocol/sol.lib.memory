@@ -6,7 +6,7 @@ import "../src/LibMemCpy.sol";
 import "../src/LibUint256Array.sol";
 import "../src/LibPointer.sol";
 
-contract LibMemCpyBytesWordsTest is Test {
+contract LibMemCpyWordsTest is Test {
     using LibPointer for Pointer;
     using LibUint256Array for uint256[];
 
