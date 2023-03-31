@@ -294,46 +294,4 @@ library LibUint256Array {
             final_ := extendInline(b_, e_)
         }
     }
-
-    // /// Copies `inputs_` to `outputCursor_` with NO attempt to check that this
-    // /// is safe to do so. The caller MUST ensure that there exists allocated
-    // /// memory at `outputCursor_` in which it is safe and appropriate to copy
-    // /// ALL `inputs_` to. Anything that was already written to memory at
-    // /// `[outputCursor_:outputCursor_+(inputs_.length * 32 bytes)]` will be
-    // /// overwritten. The length of `inputs_` is NOT copied to the output
-    // /// location, ONLY the `uint256` values of the `inputs_` array are copied.
-    // /// There is no return value as memory is modified directly.
-    // /// @param inputs_ The input array that will be copied from EXCLUDING the
-    // /// length at the start of the array in memory.
-    // /// @param outputCursor_ Location in memory that the values will be copied
-    // /// to linearly.
-    // function unsafeCopyValuesTo(uint256[] memory inputs_, Pointer outputCursor_) internal pure {
-    //     Pointer inputCursor_;
-    //     assembly ("memory-safe") {
-    //         inputCursor_ := add(inputs_, 0x20)
-    //     }
-    //     LibMemCpy.unsafeCopyWordsTo(inputCursor_, outputCursor_, inputs_.length);
-    // }
-
-    // /// Copies `length_` 32 byte words from `inputCursor_` to a newly allocated
-    // /// uint256[] array with NO attempt to check that the inputs are sane.
-    // /// This function is safe in that the outputs are guaranteed to be copied
-    // /// to newly allocated memory so no existing data will be overwritten.
-    // /// This function is subtle in that the `inputCursor_` is NOT validated in
-    // /// any way so the caller MUST ensure it points to a sensible memory
-    // /// location to read (e.g. to exclude the length from input arrays etc.).
-    // /// @param inputCursor_ The start of the memory that will be copied to the
-    // /// newly allocated array.
-    // /// @param length_ Number of 32 byte words to copy starting at
-    // /// `inputCursor_` to the items of the newly allocated array.
-    // /// @return The newly allocated `uint256[]` array.
-    // function copyToNewUint256Array(Pointer inputCursor_, uint256 length_) internal pure returns (uint256[] memory) {
-    //     uint256[] memory outputs_ = new uint256[](length_);
-    //     Pointer outputCursor_;
-    //     assembly ("memory-safe") {
-    //         outputCursor_ := add(outputs_, 0x20)
-    //     }
-    //     LibMemCpy.unsafeCopyWordsTo(inputCursor_, outputCursor_, length_);
-    //     return outputs_;
-    // }
 }
