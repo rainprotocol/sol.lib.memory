@@ -15,6 +15,7 @@ contract LibMemCpyBytesTest is Test {
         uint256 end_;
         assembly {
             end_ := add(add(target_, 0x20), mload(target_))
+            mstore(0x40, add(end_, 0x20))
             mstore(end_, suffix_)
         }
         LibMemCpy.unsafeCopyBytesTo(source_.dataPointer(), target_.dataPointer(), source_.length);

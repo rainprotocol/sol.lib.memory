@@ -14,6 +14,13 @@ error OutOfBoundsTruncate(uint256 arrayLength, uint256 truncatedLength);
 library LibUint256Array {
     using LibUint256Array for uint256[];
 
+    /// Pointer to the data of a bytes array NOT the length prefix.
+    function dataPointer(uint256[] memory data_) internal pure returns (Pointer pointer_) {
+        assembly ("memory-safe") {
+            pointer_ := add(data_, 0x20)
+        }
+    }
+
     /// Building arrays from literal components is a common task that introduces
     /// boilerplate that is either inefficient or error prone.
     /// @param a_ a single integer to build an array around.
