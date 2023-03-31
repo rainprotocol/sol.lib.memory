@@ -11,7 +11,7 @@ contract LibUint256ArrayExtendTest is Test {
     // recent thing allocated.
     function testExtendInline(uint256[] memory a_, uint256[] memory b_) public {
         uint256[] memory c_ = new uint256[](a_.length);
-        for (uint256 i_; i_ < a_.length; i_++) {
+        for (uint256 i_ = 0; i_ < a_.length; i_++) {
             c_[i_] = a_[i_];
         }
         c_ = LibUint256Array.unsafeExtend(c_, b_);
@@ -23,7 +23,7 @@ contract LibUint256ArrayExtendTest is Test {
     // This code path hits extension with allocation due to b_ sitting behind c_.
     function testExtendAllocate(uint256[] memory a_, uint256[] memory b_) public {
         uint256[] memory c_ = new uint256[](b_.length);
-        for (uint256 i_; i_ < b_.length; i_++) {
+        for (uint256 i_ = 0; i_ < b_.length; i_++) {
             c_[i_] = b_[i_];
         }
         b_ = LibUint256Array.unsafeExtend(b_, a_);

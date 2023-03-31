@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CAL
-pragma solidity ^0.8.15;
+pragma solidity ^0.8.18;
 
 /// Thrown if a truncated length is longer than the array being truncated. It is
 /// not possible to truncate something and increase its length as the memory

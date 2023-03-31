@@ -18,12 +18,12 @@ contract LibUint256ArrayArrayFromTest is Test {
         assertEq(actual_, a_.arrayFromSlow());
     }
 
-    function testArrayFromAGas0() public pure {
-        uint256(1).arrayFrom();
+    function testArrayFromAGas0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFrom();
     }
 
-    function testArrayFromAGasSlow0() public pure {
-        uint256(1).arrayFromSlow();
+    function testArrayFromAGasSlow0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFromSlow();
     }
 
     function testArrayFromAB(uint256 a_, uint256 b_) public {
@@ -32,12 +32,12 @@ contract LibUint256ArrayArrayFromTest is Test {
         assertEq(actual_, a_.arrayFromSlow(b_));
     }
 
-    function testArrayFromABGas0() public pure {
-        uint256(1).arrayFrom(2);
+    function testArrayFromABGas0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFrom(2);
     }
 
-    function testArrayFromABGasSlow0() public pure {
-        uint256(1).arrayFromSlow(2);
+    function testArrayFromABGasSlow0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFromSlow(2);
     }
 
     function testArrayFromABC(uint256 a_, uint256 b_, uint256 c_) public {
@@ -46,12 +46,12 @@ contract LibUint256ArrayArrayFromTest is Test {
         assertEq(actual_, a_.arrayFromSlow(b_, c_));
     }
 
-    function testArrayFromABCGas0() public pure {
-        uint256(1).arrayFrom(2, 3);
+    function testArrayFromABCGas0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFrom(2, 3);
     }
 
-    function testArrayFromABCGasSlow0() public pure {
-        uint256(1).arrayFromSlow(2, 3);
+    function testArrayFromABCGasSlow0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFromSlow(2, 3);
     }
 
     function testArrayFromABCD(uint256 a_, uint256 b_, uint256 c_, uint256 d_) public {
@@ -60,12 +60,12 @@ contract LibUint256ArrayArrayFromTest is Test {
         assertEq(actual_, a_.arrayFromSlow(b_, c_, d_));
     }
 
-    function testArrayFromABCDGas0() public pure {
-        uint256(1).arrayFrom(2, 3, 4);
+    function testArrayFromABCDGas0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFrom(2, 3, 4);
     }
 
-    function testArrayFromABCDGasSlow0() public pure {
-        uint256(1).arrayFromSlow(2, 3, 4);
+    function testArrayFromABCDGasSlow0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFromSlow(2, 3, 4);
     }
 
     function testArrayFromABCDE(uint256 a_, uint256 b_, uint256 c_, uint256 d_, uint256 e_) public {
@@ -74,12 +74,12 @@ contract LibUint256ArrayArrayFromTest is Test {
         assertEq(actual_, a_.arrayFromSlow(b_, c_, d_, e_));
     }
 
-    function testArrayFromABCDEGas0() public pure {
-        uint256(1).arrayFrom(2, 3, 4, 5);
+    function testArrayFromABCDEGas0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFrom(2, 3, 4, 5);
     }
 
-    function testArrayFromABCDEGasSlow0() public pure {
-        uint256(1).arrayFromSlow(2, 3, 4, 5);
+    function testArrayFromABCDEGasSlow0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFromSlow(2, 3, 4, 5);
     }
 
     function testArrayFromABCDEF(uint256 a_, uint256 b_, uint256 c_, uint256 d_, uint256 e_, uint256 f_) public {
@@ -88,12 +88,12 @@ contract LibUint256ArrayArrayFromTest is Test {
         assertEq(actual_, a_.arrayFromSlow(b_, c_, d_, e_, f_));
     }
 
-    function testArrayFromABCDEFGas0() public pure {
-        uint256(1).arrayFrom(2, 3, 4, 5, 6);
+    function testArrayFromABCDEFGas0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFrom(2, 3, 4, 5, 6);
     }
 
-    function testArrayFromABCDEFGasSlow0() public pure {
-        uint256(1).arrayFromSlow(2, 3, 4, 5, 6);
+    function testArrayFromABCDEFGasSlow0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFromSlow(2, 3, 4, 5, 6);
     }
 
     function testArrayFromATail(uint256 a_, uint256[] memory tail_) public {
@@ -102,12 +102,12 @@ contract LibUint256ArrayArrayFromTest is Test {
         assertEq(actual_, a_.arrayFromSlow(tail_));
     }
 
-    function testArrayFromATailGas0() public pure {
-        uint256(1).arrayFrom(uint256(2).arrayFrom(3, 4));
+    function testArrayFromATailGas0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFrom(uint256(2).arrayFrom(3, 4));
     }
 
-    function testArrayFromATailGasSlow0() public pure {
-        uint256(1).arrayFromSlow(uint256(2).arrayFrom(3, 4));
+    function testArrayFromATailGasSlow0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFromSlow(uint256(2).arrayFrom(3, 4));
     }
 
     function testArrayFromABTail(uint256 a_, uint256 b_, uint256[] memory tail_) public {
@@ -116,12 +116,12 @@ contract LibUint256ArrayArrayFromTest is Test {
         assertEq(actual_, a_.arrayFromSlow(b_, tail_));
     }
 
-    function testArrayFromABTailGas0() public pure {
-        uint256(1).arrayFrom(2, uint256(3).arrayFrom(4, 5));
+    function testArrayFromABTailGas0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFrom(2, uint256(3).arrayFrom(4, 5));
     }
 
-    function testArrayFromABTailGasSlow0() public pure {
-        uint256(1).arrayFromSlow(2, uint256(3).arrayFrom(4, 5));
+    function testArrayFromABTailGasSlow0() public pure returns (uint256[] memory) {
+        return uint256(1).arrayFromSlow(2, uint256(3).arrayFrom(4, 5));
     }
 
     function testArrayFromMatrix(uint256[] memory a_) public {
@@ -135,11 +135,11 @@ contract LibUint256ArrayArrayFromTest is Test {
         }
     }
 
-    function testArrayFromMatrixGas0() public pure {
-        uint256(1).arrayFrom().matrixFrom();
+    function testArrayFromMatrixGas0() public pure returns (uint256[][] memory) {
+        return uint256(1).arrayFrom().matrixFrom();
     }
 
-    function testArrayFromMatrixGasSlow0() public pure {
-        uint256(1).arrayFrom().matrixFromSlow();
+    function testArrayFromMatrixGasSlow0() public pure returns (uint256[][] memory) {
+        return uint256(1).arrayFrom().matrixFromSlow();
     }
 }
