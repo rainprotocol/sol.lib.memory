@@ -21,18 +21,33 @@ contract LibUint256ArrayArrayFromTest is Test {
         }
     }
 
-    function testArrayFromMatrix(uint256[] memory a_) public {
+    function testMatrixFromA(uint256[] memory a_) public {
         uint256[][] memory matrix_ = a_.matrixFrom();
         assertTrue(LibMemory.memoryIsAligned());
         uint256[][] memory matrixSlow_ = a_.matrixFromSlow();
         compareMatrices(matrix_, matrixSlow_, 1);
     }
 
-    function testArrayFromMatrixGas0() public pure returns (uint256[][] memory) {
+    function testMatrixFromAGas0() public pure returns (uint256[][] memory) {
         return uint256(1).arrayFrom().matrixFrom();
     }
 
-    function testArrayFromMatrixGasSlow0() public pure returns (uint256[][] memory) {
+    function testMatrixFromAGasSlow0() public pure returns (uint256[][] memory) {
         return uint256(1).arrayFrom().matrixFromSlow();
+    }
+
+    function testMatrixFromAB(uint256[] memory a_, uint256[] memory b_) public {
+        uint256[][] memory matrix_ = LibUint256Matrix.matrixFrom(a_, b_);
+        assertTrue(LibMemory.memoryIsAligned());
+        uint256[][] memory matrixSlow_ = LibUint256MatrixSlow.matrixFromSlow(a_, b_);
+        compareMatrices(matrix_, matrixSlow_, 2);
+    }
+
+    function testMatrixFromABGas0() public pure returns (uint256[][] memory) {
+        return LibUint256Matrix.matrixFrom(uint256(1).arrayFrom(), uint256(2).arrayFrom());
+    }
+
+    function testMatrixFromABGasSlow0() public pure returns (uint256[][] memory) {
+        return LibUint256MatrixSlow.matrixFromSlow(uint256(1).arrayFrom(), uint256(2).arrayFrom());
     }
 }
