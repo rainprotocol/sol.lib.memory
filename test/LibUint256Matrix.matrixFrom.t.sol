@@ -8,7 +8,7 @@ import "./LibUint256ArraySlow.sol";
 import "./LibUint256MatrixSlow.sol";
 import "../src/LibMemory.sol";
 
-contract LibUint256ArrayArrayFromTest is Test {
+contract LibUint256ArrayMatrixFromTest is Test {
     using LibUint256Array for uint256;
     using LibUint256Matrix for uint256[];
     using LibUint256MatrixSlow for uint256[];
