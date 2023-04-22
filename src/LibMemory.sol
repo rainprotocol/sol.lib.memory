@@ -2,9 +2,9 @@
 pragma solidity ^0.8.18;
 
 library LibMemory {
-    function memoryIsAligned() internal pure returns (bool isAligned_) {
+    function memoryIsAligned() internal pure returns (bool isAligned) {
         assembly ("memory-safe") {
-            isAligned_ := iszero(mod(mload(0x40), 0x20))
+            isAligned := iszero(mod(mload(0x40), 0x20))
         }
     }
 }

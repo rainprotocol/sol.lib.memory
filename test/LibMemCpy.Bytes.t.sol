@@ -10,30 +10,30 @@ contract LibMemCpyBytesTest is Test {
     using LibPointer for Pointer;
     using LibBytes for bytes;
 
-    function testCopyFuzz(bytes memory source_, uint256 suffix_) public {
-        bytes memory target_ = new bytes(source_.length);
-        uint256 end_;
+    function testCopyFuzz(bytes memory source, uint256 suffix) public {
+        bytes memory target = new bytes(source.length);
+        uint256 end;
         assembly {
-            end_ := add(add(target_, 0x20), mload(target_))
-            mstore(0x40, add(end_, 0x20))
-            mstore(end_, suffix_)
+            end := add(add(target, 0x20), mload(target))
+            mstore(0x40, add(end, 0x20))
+            mstore(end, suffix)
         }
-        LibMemCpy.unsafeCopyBytesTo(source_.dataPointer(), target_.dataPointer(), source_.length);
-        assertEq(source_, target_);
-        uint256 suffixAfter_;
+        LibMemCpy.unsafeCopyBytesTo(source.dataPointer(), target.dataPointer(), source.length);
+        assertEq(source, target);
+        uint256 suffixAfter;
         assembly {
-            suffixAfter_ := mload(end_)
+            suffixAfter := mload(end)
         }
-        assertEq(suffix_, suffixAfter_);
+        assertEq(suffix, suffixAfter);
     }
 
-    function testCopyMultiWordFuzz(bytes memory source_, uint256 suffix_) public {
-        vm.assume(source_.length > 0x20);
-        testCopyFuzz(source_, suffix_);
+    function testCopyMultiWordFuzz(bytes memory source, uint256 suffix) public {
+        vm.assume(source.length > 0x20);
+        testCopyFuzz(source, suffix);
     }
 
-    function testCopyMaxSuffixFuzz(bytes memory source_) public {
-        testCopyFuzz(source_, type(uint256).max);
+    function testCopyMaxSuffixFuzz(bytes memory source) public {
+        testCopyFuzz(source, type(uint256).max);
     }
 
     function testCopySimple() public {
@@ -42,18 +42,18 @@ contract LibMemCpyBytesTest is Test {
 
     // Uses somewhat circular logic to test that existing data in target cannot
     // corrupt copying from source somehow.
-    function testCopyDirtyTargetFuzz(bytes memory source_, bytes memory target_) public {
-        vm.assume(target_.length >= source_.length);
-        bytes memory remainder_ = new bytes(target_.length - source_.length);
+    function testCopyDirtyTargetFuzz(bytes memory source, bytes memory target) public {
+        vm.assume(target.length >= source.length);
+        bytes memory remainder = new bytes(target.length - source.length);
         LibMemCpy.unsafeCopyBytesTo(
-            target_.dataPointer().addBytes(source_.length), remainder_.dataPointer(), remainder_.length
+            target.dataPointer().addBytes(source.length), remainder.dataPointer(), remainder.length
         );
-        bytes memory remainderCopy_ = new bytes(remainder_.length);
-        LibMemCpy.unsafeCopyBytesTo(remainder_.dataPointer(), remainderCopy_.dataPointer(), remainder_.length);
+        bytes memory remainderCopy = new bytes(remainder.length);
+        LibMemCpy.unsafeCopyBytesTo(remainder.dataPointer(), remainderCopy.dataPointer(), remainder.length);
 
-        LibMemCpy.unsafeCopyBytesTo(source_.dataPointer(), target_.dataPointer(), source_.length);
-        target_.truncate(source_.length);
-        assertEq(source_, target_);
-        assertEq(remainder_, remainderCopy_);
+        LibMemCpy.unsafeCopyBytesTo(source.dataPointer(), target.dataPointer(), source.length);
+        target.truncate(source.length);
+        assertEq(source, target);
+        assertEq(remainder, remainderCopy);
     }
 }
