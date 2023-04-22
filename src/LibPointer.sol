@@ -54,7 +54,7 @@ library LibPointer {
     /// Read the word at the pointer.
     /// @param pointer Pointer to read the word at.
     /// @return word The word read from the pointer.
-    function readWordAt(Pointer pointer) internal pure returns (uint256 word) {
+    function readWord(Pointer pointer) internal pure returns (uint256 word) {
         assembly ("memory-safe") {
             word := mload(pointer)
         }
@@ -63,7 +63,7 @@ library LibPointer {
     /// Write a word at the pointer.
     /// @param pointer Pointer to write the word at.
     /// @param word The word to write.
-    function writeWordAt(Pointer pointer, uint256 word) internal pure {
+    function writeWord(Pointer pointer, uint256 word) internal pure {
         assembly ("memory-safe") {
             mstore(pointer, word)
         }

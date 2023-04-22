@@ -10,7 +10,7 @@ contract LibPointerTest is Test {
     using LibBytes for bytes;
 
     function testAsBytesRound(Pointer pointer_) public {
-        assertEq(Pointer.unwrap(pointer_), Pointer.unwrap(pointer_.asBytes().asPointer()));
+        assertEq(Pointer.unwrap(pointer_), Pointer.unwrap(pointer_.asBytes().startPointer()));
     }
 
     function testAddBytesFuzz(uint32 pointer_, uint32 n_) public {
