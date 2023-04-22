@@ -53,7 +53,7 @@ library LibStackPointer {
     ///
     /// @param pointer Pointer to the top of the stack to read below.
     /// @return word The word that was read.
-    function peek(Pointer pointer) internal pure returns (uint256 word) {
+    function unsafePeek(Pointer pointer) internal pure returns (uint256 word) {
         assembly ("memory-safe") {
             word := mload(sub(pointer, 0x20))
         }
@@ -61,12 +61,12 @@ library LibStackPointer {
 
     /// Peeks 2 words from the top of the stack.
     ///
-    /// Same as `peek` but returns 2 words instead of 1.
+    /// Same as `unsafePeek` but returns 2 words instead of 1.
     ///
     /// @param pointer The stack top to peek below.
     /// @return lower The lower of the two words read.
     /// @return upper The upper of the two words read.
-    function peek2(Pointer pointer) internal pure returns (uint256 lower, uint256 upper) {
+    function unsafePeek2(Pointer pointer) internal pure returns (uint256 lower, uint256 upper) {
         assembly ("memory-safe") {
             lower := mload(sub(pointer, 0x40))
             upper := mload(sub(pointer, 0x20))
@@ -81,13 +81,15 @@ library LibStackPointer {
     ///
     /// https://en.wikipedia.org/wiki/Stack_(abstract_data_type)
     ///
+    /// The caller MUST ensure the pop will not result in an out of bounds read.
+    ///
     /// @param pointer Pointer to the top of the stack to read below.
     /// @return pointerAfter Pointer after the pop.
     /// @return word The word that was read.
-    function pop(Pointer pointer) internal pure returns (Pointer pointerAfter, uint256 word) {
+    function unsafePop(Pointer pointer) internal pure returns (Pointer pointerAfter, uint256 word) {
         assembly ("memory-safe") {
             pointerAfter := sub(pointer, 0x20)
-            word := mload(pointer)
+            word := mload(pointerAfter)
         }
     }
 
@@ -98,52 +100,16 @@ library LibStackPointer {
     ///
     /// https://en.wikipedia.org/wiki/Stack_(abstract_data_type)
     ///
+    /// The caller MUST ensure the push will not result in an out of bounds
+    /// write.
+    ///
     /// @param pointer The stack pointer to write at.
     /// @param word The value to write.
     /// @return The stack pointer above where `word` was written to.
-    function push(Pointer pointer, uint256 word) internal pure returns (Pointer) {
+    function unsafePush(Pointer pointer, uint256 word) internal pure returns (Pointer) {
         assembly ("memory-safe") {
             mstore(pointer, word)
             pointer := add(pointer, 0x20)
-        }
-        return pointer;
-    }
-
-    /// Push 8 words to the top of the stack.
-    ///
-    /// Same as `push` 8x for 8 words.
-    ///
-    /// @param pointer The stack pointer to write at.
-    /// @param a The first value to write.
-    /// @param b The second value to write.
-    /// @param c The third value to write.
-    /// @param d The fourth value to write.
-    /// @param e The fifth value to write.
-    /// @param f The sixth value to write.
-    /// @param g The seventh value to write.
-    /// @param h The eighth value to write.
-    /// @return The stack pointer above where `h` was written.
-    function push(
-        Pointer pointer,
-        uint256 a,
-        uint256 b,
-        uint256 c,
-        uint256 d,
-        uint256 e,
-        uint256 f,
-        uint256 g,
-        uint256 h
-    ) internal pure returns (Pointer) {
-        assembly ("memory-safe") {
-            mstore(pointer, a)
-            mstore(add(pointer, 0x20), b)
-            mstore(add(pointer, 0x40), c)
-            mstore(add(pointer, 0x60), d)
-            mstore(add(pointer, 0x80), e)
-            mstore(add(pointer, 0xA0), f)
-            mstore(add(pointer, 0xC0), g)
-            mstore(add(pointer, 0xE0), h)
-            pointer := add(pointer, 0x100)
         }
         return pointer;
     }
@@ -165,7 +131,7 @@ library LibStackPointer {
     /// @param length The number of values to include in the returned array.
     /// @return head The value that was overwritten with the length.
     /// @return tail The array constructed from the stack memory.
-    function list(Pointer pointer, uint256 length) internal pure returns (uint256 head, uint256[] memory tail) {
+    function unsafeList(Pointer pointer, uint256 length) internal pure returns (uint256 head, uint256[] memory tail) {
         assembly ("memory-safe") {
             tail := sub(pointer, add(0x20, mul(length, 0x20)))
             head := mload(tail)
@@ -175,16 +141,19 @@ library LibStackPointer {
 
     /// Convert two stack pointer values to a single stack index. A stack index
     /// is the distance in 32 byte increments between two stack pointers. The
-    /// calculations assumes the two stack pointers are aligned. The caller MUST
-    /// ensure the alignment of both values. The calculation is unchecked and MAY
-    /// underflow. The caller MUST ensure that the stack top is always above the
-    /// stack bottom.
-    /// @param stackBottom The lower of the two values.
-    /// @param stackTop The higher of the two values.
+    /// calculations assumes the two stack pointers are aligned.
+    ///
+    /// The caller MUST ensure the alignment of both values. The calculation is
+    /// unchecked and MAY underflow.
+    ///
+    /// The caller MUST ensure that the upper is greater or equal the lower.
+    ///
+    /// @param lower The lower of the two values.
+    /// @param upper The higher of the two values.
     /// @return The stack index as 32 byte distance between the top and bottom.
-    function toIndex(Pointer stackBottom, Pointer stackTop) internal pure returns (uint256) {
+    function unsafeToIndex(Pointer lower, Pointer upper) internal pure returns (uint256) {
         unchecked {
-            return (Pointer.unwrap(stackTop) - Pointer.unwrap(stackBottom)) / 0x20;
+            return (Pointer.unwrap(upper) - Pointer.unwrap(lower)) / 0x20;
         }
     }
 
