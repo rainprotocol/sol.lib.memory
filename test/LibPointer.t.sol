@@ -4,21 +4,59 @@ pragma solidity ^0.8.18;
 import "forge-std/Test.sol";
 import "../src/LibPointer.sol";
 import "../src/LibBytes.sol";
+import "../src/LibUint256Array.sol";
 
 contract LibPointerTest is Test {
     using LibPointer for Pointer;
     using LibBytes for bytes;
+    using LibUint256Array for uint256[];
 
-    function testAsBytesRound(Pointer pointer_) public {
-        assertEq(Pointer.unwrap(pointer_), Pointer.unwrap(pointer_.asBytes().startPointer()));
+    function testUnsafeAsBytesRoundBytes(bytes memory data) public {
+        assertEq(data, data.startPointer().unsafeAsBytes());
     }
 
-    function testAddBytesFuzz(uint32 pointer_, uint32 n_) public {
-        assertEq(uint256(pointer_) + uint256(n_), Pointer.unwrap(Pointer.wrap(pointer_).addBytes(n_)));
+    function testUnsafeAsBytesRound(Pointer pointer) public {
+        assertEq(Pointer.unwrap(pointer), Pointer.unwrap(pointer.unsafeAsBytes().startPointer()));
     }
 
-    function testAddWordsFuzz(uint32 pointer_, uint32 n_) public {
-        assertEq(uint256(pointer_) + uint256(n_) * 0x20, Pointer.unwrap(Pointer.wrap(pointer_).addWords(n_)));
+    function testUnsafeAsUint256ArrayRoundUint256Array(uint256[] memory array) public {
+        assertEq(array, array.startPointer().unsafeAsUint256Array());
+    }
+
+    function testUnsafeAsUint256ArrayRound(Pointer pointer) public {
+        assertEq(Pointer.unwrap(pointer), Pointer.unwrap(pointer.unsafeAsUint256Array().startPointer()));
+    }
+
+    function testUnsafeAddBytes(uint32 pointer, uint32 n) public {
+        assertEq(uint256(pointer) + uint256(n), Pointer.unwrap(Pointer.wrap(pointer).unsafeAddBytes(n)));
+    }
+
+    function testUnsafeAddWord(uint32 pointer) public {
+        assertEq(uint256(pointer) + 0x20, Pointer.unwrap(Pointer.wrap(pointer).unsafeAddWord()));
+    }
+
+    function testUnsafeAddWords(uint32 pointer, uint32 n) public {
+        assertEq(uint256(pointer) + uint256(n) * 0x20, Pointer.unwrap(Pointer.wrap(pointer).unsafeAddWords(n)));
+    }
+
+    function testUnsafeSubWord(uint32 pointer) public {
+        // The caller MUST ensure the pointer will not underflow on sub.
+        vm.assume(pointer >= 0x20);
+        assertEq(uint256(pointer) - 0x20, Pointer.unwrap(Pointer.wrap(pointer).unsafeSubWord()));
+    }
+
+    function testUnsafeSubWords(uint32 pointer, uint32 n) public {
+        // The caller MUST ensure the pointer will not underflow on sub.
+        vm.assume(uint256(pointer) >= uint256(n) * 0x20);
+        assertEq(uint256(pointer) - uint256(n) * 0x20, Pointer.unwrap(Pointer.wrap(pointer).unsafeSubWords(n)));
+    }
+
+    function testReadWriteRound(uint256 a, uint256 b) public {
+        Pointer pointer = LibPointer.allocatedMemoryPointer();
+        pointer.unsafeWriteWord(a);
+        assertEq(a, pointer.unsafeReadWord());
+        pointer.unsafeWriteWord(b);
+        assertEq(b, pointer.unsafeReadWord());
     }
 
     function testAllocatedMemoryPointer(uint8 length_) public {

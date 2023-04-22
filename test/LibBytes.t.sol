@@ -22,11 +22,11 @@ contract LibBytesTest is Test {
     }
 
     function testDataPointerFuzz(bytes memory data) public {
-        assertEq(Pointer.unwrap(data.dataPointer()), Pointer.unwrap(data.startPointer().addWord()));
+        assertEq(Pointer.unwrap(data.dataPointer()), Pointer.unwrap(data.startPointer().unsafeAddWord()));
     }
 
     function testRoundBytesPointer(bytes memory data) public {
-        assertEq(data, data.startPointer().asBytes());
+        assertEq(data, data.startPointer().unsafeAsBytes());
     }
 
     function testDataRound(bytes memory data) public {

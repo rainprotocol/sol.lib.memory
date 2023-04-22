@@ -54,7 +54,7 @@ contract LibMemCpyWordsTest is Test {
         vm.assume(target_.length >= source_.length);
         uint256[] memory remainder_ = new uint256[](target_.length - source_.length);
         LibMemCpy.unsafeCopyWordsTo(
-            target_.dataPointer().addWords(source_.length), remainder_.dataPointer(), remainder_.length
+            target_.dataPointer().unsafeAddWords(source_.length), remainder_.dataPointer(), remainder_.length
         );
         uint256[] memory remainderCopy_ = new uint256[](remainder_.length);
         LibMemCpy.unsafeCopyWordsTo(remainder_.dataPointer(), remainderCopy_.dataPointer(), remainder_.length);

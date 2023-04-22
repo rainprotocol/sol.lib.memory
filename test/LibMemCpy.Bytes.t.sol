@@ -46,7 +46,7 @@ contract LibMemCpyBytesTest is Test {
         vm.assume(target.length >= source.length);
         bytes memory remainder = new bytes(target.length - source.length);
         LibMemCpy.unsafeCopyBytesTo(
-            target.dataPointer().addBytes(source.length), remainder.dataPointer(), remainder.length
+            target.dataPointer().unsafeAddBytes(source.length), remainder.dataPointer(), remainder.length
         );
         bytes memory remainderCopy = new bytes(remainder.length);
         LibMemCpy.unsafeCopyBytesTo(remainder.dataPointer(), remainderCopy.dataPointer(), remainder.length);
