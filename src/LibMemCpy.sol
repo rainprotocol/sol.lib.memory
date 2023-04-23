@@ -14,52 +14,52 @@ library LibMemCpy {
     /// sufficient memory is allocated and reading/writing the requested number
     /// of bytes from/to the requested locations WILL NOT corrupt memory in the
     /// opinion of solidity or other subsequent read/write operations.
-    /// @param source_ The starting location in memory to read from.
-    /// @param target_ The starting location in memory to write to.
-    /// @param length_ The number of bytes to read/write.
-    function unsafeCopyBytesTo(Pointer source_, Pointer target_, uint256 length_) internal pure {
+    /// @param source The starting pointer to read from.
+    /// @param target The starting pointer to write to.
+    /// @param length The number of bytes to read/write.
+    function unsafeCopyBytesTo(Pointer source, Pointer target, uint256 length) internal pure {
         assembly ("memory-safe") {
-            for {} iszero(lt(length_, 0x20)) {
-                length_ := sub(length_, 0x20)
-                source_ := add(source_, 0x20)
-                target_ := add(target_, 0x20)
-            } { mstore(target_, mload(source_)) }
+            for {} iszero(lt(length, 0x20)) {
+                length := sub(length, 0x20)
+                source := add(source, 0x20)
+                target := add(target, 0x20)
+            } { mstore(target, mload(source)) }
 
-            if iszero(iszero(length_)) {
+            if iszero(iszero(length)) {
                 //slither-disable-next-line incorrect-shift
-                let mask_ := shr(mul(length_, 8), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)
+                let mask_ := shr(mul(length, 8), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)
                 // preserve existing bytes
                 mstore(
-                    target_,
+                    target,
                     or(
                         // input
-                        and(mload(source_), not(mask_)),
-                        and(mload(target_), mask_)
+                        and(mload(source), not(mask_)),
+                        and(mload(target), mask_)
                     )
                 )
             }
         }
     }
 
-    /// Copies `length_` `uint256` values starting from `source_` to `target_`
+    /// Copies `length` `uint256` values starting from `source` to `target`
     /// with NO attempt to check that this is safe to do so. The caller MUST
-    /// ensure that there exists allocated memory at `target_` in which it is
-    /// safe and appropriate to copy `length_ * 32` bytes to. Anything that was
-    /// already written to memory at `[target_:target_+(length_ * 32 bytes)]`
+    /// ensure that there exists allocated memory at `target` in which it is
+    /// safe and appropriate to copy `length * 32` bytes to. Anything that was
+    /// already written to memory at `[target:target+(length * 32 bytes)]`
     /// will be overwritten.
     /// There is no return value as memory is modified directly.
-    /// @param source_ The starting position in memory that data will be copied
+    /// @param source The starting position in memory that data will be copied
     /// from.
-    /// @param target_ The starting position in memory that data will be copied
+    /// @param target The starting position in memory that data will be copied
     /// to.
-    /// @param length_ The number of 32 byte (i.e. `uint256`) words that will
+    /// @param length The number of 32 byte (i.e. `uint256`) words that will
     /// be copied.
-    function unsafeCopyWordsTo(Pointer source_, Pointer target_, uint256 length_) internal pure {
+    function unsafeCopyWordsTo(Pointer source, Pointer target, uint256 length) internal pure {
         assembly ("memory-safe") {
-            for { let end_ := add(source_, mul(0x20, length_)) } lt(source_, end_) {
-                source_ := add(source_, 0x20)
-                target_ := add(target_, 0x20)
-            } { mstore(target_, mload(source_)) }
+            for { let end_ := add(source, mul(0x20, length)) } lt(source, end_) {
+                source := add(source, 0x20)
+                target := add(target, 0x20)
+            } { mstore(target, mload(source)) }
         }
     }
 }

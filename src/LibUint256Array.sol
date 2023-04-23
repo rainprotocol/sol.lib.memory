@@ -14,10 +14,24 @@ error OutOfBoundsTruncate(uint256 arrayLength, uint256 truncatedLength);
 library LibUint256Array {
     using LibUint256Array for uint256[];
 
-    /// Pointer to the data of a bytes array NOT the length prefix.
-    function dataPointer(uint256[] memory data_) internal pure returns (Pointer pointer_) {
+    /// Pointer to the start (length prefix) of a `uint256[]`.
+    function startPointer(uint256[] memory array) internal pure returns (Pointer pointer) {
         assembly ("memory-safe") {
-            pointer_ := add(data_, 0x20)
+            pointer := array
+        }
+    }
+
+    /// Pointer to the data of a `uint256[]` NOT the length prefix.
+    function dataPointer(uint256[] memory array) internal pure returns (Pointer pointer) {
+        assembly ("memory-safe") {
+            pointer := add(array, 0x20)
+        }
+    }
+
+    /// Pointer to the end of the allocated memory of an array.
+    function endPointer(uint256[] memory array) internal pure returns (Pointer pointer) {
+        assembly ("memory-safe") {
+            pointer := add(array, add(0x20, mul(0x20, mload(array))))
         }
     }
 
