@@ -5,10 +5,6 @@ import "./LibUint256Array.sol";
 import "./LibMemory.sol";
 import "./LibMemCpy.sol";
 
-/// Thrown when the length of an array as the result of an applied function does
-/// not match expectations.
-error UnexpectedResultLength(uint256 expectedLength, uint256 actualLength);
-
 /// @title LibStackPointer
 /// @notice A stack `Pointer` is still just a pointer to some memory, but we are
 /// going to treat it like it is pointing to a stack data structure. That means
