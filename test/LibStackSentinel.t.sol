@@ -12,8 +12,8 @@ contract LibStackSentinelTest is Test {
     using LibStackSentinel for Pointer;
 
     function testConsumeSentinelTuple2(uint256[] memory stack, Sentinel sentinel, uint8 sentinelIndex) public {
-        //slither-disable-next-line calls-loop
         for (uint256 i = 0; i < stack.length; i++) {
+            //slither-disable-next-line calls-loop
             vm.assume(stack[i] != Sentinel.unwrap(sentinel));
         }
         vm.assume(sentinelIndex < stack.length);
@@ -40,8 +40,8 @@ contract LibStackSentinelTest is Test {
     }
 
     function testConsumeSentinelTuple2MissingSentinel(uint256[] memory stack, Sentinel sentinel) public {
-        //slither-disable-next-line calls-loop
         for (uint256 i = 0; i < stack.length; i++) {
+            //slither-disable-next-line calls-loop
             vm.assume(stack[i] != Sentinel.unwrap(sentinel));
         }
 
@@ -55,8 +55,8 @@ contract LibStackSentinelTest is Test {
     function testConsumeSentinelTuple2OddSentinel(uint256[] memory stack, Sentinel sentinel, uint8 sentinelIndex)
         public
     {
-        //slither-disable-next-line calls-loop
         for (uint256 i = 0; i < stack.length; i++) {
+            //slither-disable-next-line calls-loop
             vm.assume(stack[i] != Sentinel.unwrap(sentinel));
         }
         vm.assume(sentinelIndex < stack.length);
@@ -101,10 +101,12 @@ contract LibStackSentinelTest is Test {
         }
 
         vm.expectRevert(abi.encodeWithSelector(MissingSentinel.selector, sentinel));
+        //slither-disable-next-line similar-names
         (Pointer sentinelPointer0, uint256[2][] memory tuples0) = lower.consumeSentinelTuple2(lower, sentinel);
         (sentinelPointer0);
         (tuples0);
 
+        //slither-disable-next-line similar-names
         (Pointer sentinelPointer1, uint256[2][] memory tuples1) =
             lower.consumeSentinelTuple2(lower.unsafeAddWord(), sentinel);
         (sentinelPointer1);
