@@ -54,6 +54,7 @@ contract LibStackPointerTest is Test {
         Pointer poppable = pointer.unsafeAddWord();
 
         pointer.unsafeWriteWord(a);
+        //slither-disable-next-line similar-names
         (Pointer poppedPointer0, uint256 pop0) = poppable.unsafePop();
 
         // Pop is "destructive" in that it returns a new pointer below what it
@@ -61,11 +62,14 @@ contract LibStackPointerTest is Test {
         assertEq(Pointer.unwrap(pointer), Pointer.unwrap(poppedPointer0));
         assertEq(a, pop0);
 
+        //slither-disable-next-line similar-names
         (Pointer poppedPointer1, uint256 pop1) = poppable.unsafePop();
         assertEq(Pointer.unwrap(pointer), Pointer.unwrap(poppedPointer1));
         assertEq(a, pop1);
 
         pointer.unsafeWriteWord(b);
+
+        //slither-disable-next-line similar-names
         (Pointer poppedPointer2, uint256 pop2) = poppable.unsafePop();
         assertEq(Pointer.unwrap(pointer), Pointer.unwrap(poppedPointer2));
         assertEq(b, pop2);

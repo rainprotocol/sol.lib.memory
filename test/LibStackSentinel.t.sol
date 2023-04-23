@@ -12,6 +12,7 @@ contract LibStackSentinelTest is Test {
     using LibStackSentinel for Pointer;
 
     function testConsumeSentinelTuple2(uint256[] memory stack, Sentinel sentinel, uint8 sentinelIndex) public {
+        //slither-disable-next-line calls-loop
         for (uint256 i = 0; i < stack.length; i++) {
             vm.assume(stack[i] != Sentinel.unwrap(sentinel));
         }
@@ -39,6 +40,7 @@ contract LibStackSentinelTest is Test {
     }
 
     function testConsumeSentinelTuple2MissingSentinel(uint256[] memory stack, Sentinel sentinel) public {
+        //slither-disable-next-line calls-loop
         for (uint256 i = 0; i < stack.length; i++) {
             vm.assume(stack[i] != Sentinel.unwrap(sentinel));
         }
@@ -53,6 +55,7 @@ contract LibStackSentinelTest is Test {
     function testConsumeSentinelTuple2OddSentinel(uint256[] memory stack, Sentinel sentinel, uint8 sentinelIndex)
         public
     {
+        //slither-disable-next-line calls-loop
         for (uint256 i = 0; i < stack.length; i++) {
             vm.assume(stack[i] != Sentinel.unwrap(sentinel));
         }
