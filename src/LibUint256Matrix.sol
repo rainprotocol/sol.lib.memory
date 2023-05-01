@@ -74,7 +74,6 @@ library LibUint256Matrix {
             mstore(add(matrix, 0x20), a)
             mstore(add(matrix, 0x40), b)
         }
-        return matrix;
     }
 
     /// 2-dimensional analogue of `arrayFrom`. Takes 1-dimensional arrays and
