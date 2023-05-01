@@ -15,6 +15,8 @@ library LibUint256Array {
     using LibUint256Array for uint256[];
 
     /// Pointer to the start (length prefix) of a `uint256[]`.
+    /// @param array The array to get the start pointer of.
+    /// @return pointer The pointer to the start of `array`.
     function startPointer(uint256[] memory array) internal pure returns (Pointer pointer) {
         assembly ("memory-safe") {
             pointer := array
@@ -22,6 +24,8 @@ library LibUint256Array {
     }
 
     /// Pointer to the data of a `uint256[]` NOT the length prefix.
+    /// @param array The array to get the data pointer of.
+    /// @return pointer The pointer to the data of `array`.
     function dataPointer(uint256[] memory array) internal pure returns (Pointer pointer) {
         assembly ("memory-safe") {
             pointer := add(array, 0x20)
@@ -29,182 +33,198 @@ library LibUint256Array {
     }
 
     /// Pointer to the end of the allocated memory of an array.
+    /// @param array The array to get the end pointer of.
+    /// @return pointer The pointer to the end of `array`.
     function endPointer(uint256[] memory array) internal pure returns (Pointer pointer) {
         assembly ("memory-safe") {
             pointer := add(array, add(0x20, mul(0x20, mload(array))))
         }
     }
 
-    /// Building arrays from literal components is a common task that introduces
-    /// boilerplate that is either inefficient or error prone.
-    /// @param a_ a single integer to build an array around.
-    /// @return the newly allocated array including a_ as a single item.
-    function arrayFrom(uint256 a_) internal pure returns (uint256[] memory) {
-        uint256[] memory array_ = new uint256[](1);
+    /// Cast a `Pointer` to `uint256[]` without modification or safety checks.
+    /// The caller MUST ensure the pointer is to a valid region of memory for
+    /// some `uint256[]`.
+    /// @param pointer The pointer to cast to `uint256[]`.
+    /// @return array The cast `uint256[]`.
+    function unsafeAsUint256Array(Pointer pointer) internal pure returns (uint256[] memory array) {
         assembly ("memory-safe") {
-            mstore(add(array_, 0x20), a_)
+            array := pointer
         }
-        return array_;
     }
 
     /// Building arrays from literal components is a common task that introduces
     /// boilerplate that is either inefficient or error prone.
-    /// @param a_ the first integer to build an array around.
-    /// @param b_ the second integer to build an array around.
-    /// @return the newly allocated array including a_ and b_ as the only items.
-    function arrayFrom(uint256 a_, uint256 b_) internal pure returns (uint256[] memory) {
-        uint256[] memory array_ = new uint256[](2);
+    /// @param a A single integer to build an array around.
+    /// @return array The newly allocated array including `a` as a single item.
+    function arrayFrom(uint256 a) internal pure returns (uint256[] memory array) {
         assembly ("memory-safe") {
-            mstore(add(array_, 0x20), a_)
-            mstore(add(array_, 0x40), b_)
+            array := mload(0x40)
+            mstore(array, 1)
+            mstore(add(array, 0x20), a)
+            mstore(0x40, add(array, 0x40))
         }
-        return array_;
     }
 
     /// Building arrays from literal components is a common task that introduces
     /// boilerplate that is either inefficient or error prone.
-    /// @param a_ the first integer to build an array around.
-    /// @param b_ the second integer to build an array around.
-    /// @param c_ the third integer to build an array around.
-    /// @return the newly allocated array including a_, b_ and c_ as the only
+    /// @param a The first integer to build an array around.
+    /// @param b The second integer to build an array around.
+    /// @return array The newly allocated array including `a` and `b` as the only
     /// items.
-    function arrayFrom(uint256 a_, uint256 b_, uint256 c_) internal pure returns (uint256[] memory) {
-        uint256[] memory array_ = new uint256[](3);
+    function arrayFrom(uint256 a, uint256 b) internal pure returns (uint256[] memory array) {
         assembly ("memory-safe") {
-            mstore(add(array_, 0x20), a_)
-            mstore(add(array_, 0x40), b_)
-            mstore(add(array_, 0x60), c_)
+            array := mload(0x40)
+            mstore(array, 2)
+            mstore(add(array, 0x20), a)
+            mstore(add(array, 0x40), b)
+            mstore(0x40, add(array, 0x60))
         }
-        return array_;
     }
 
     /// Building arrays from literal components is a common task that introduces
     /// boilerplate that is either inefficient or error prone.
-    /// @param a_ the first integer to build an array around.
-    /// @param b_ the second integer to build an array around.
-    /// @param c_ the third integer to build an array around.
-    /// @param d_ the fourth integer to build an array around.
-    /// @return the newly allocated array including a_, b_, c_ and d_ as the only
-    /// items.
-    function arrayFrom(uint256 a_, uint256 b_, uint256 c_, uint256 d_) internal pure returns (uint256[] memory) {
-        uint256[] memory array_ = new uint256[](4);
-        assembly ("memory-safe") {
-            mstore(add(array_, 0x20), a_)
-            mstore(add(array_, 0x40), b_)
-            mstore(add(array_, 0x60), c_)
-            mstore(add(array_, 0x80), d_)
-        }
-        return array_;
-    }
-
-    /// Building arrays from literal components is a common task that introduces
-    /// boilerplate that is either inefficient or error prone.
-    /// @param a_ the first integer to build an array around.
-    /// @param b_ the second integer to build an array around.
-    /// @param c_ the third integer to build an array around.
-    /// @param d_ the fourth integer to build an array around.
-    /// @param e_ the fifth integer to build an array around.
-    /// @return the newly allocated array including a_, b_, c_, d_ and e_ as the
+    /// @param a The first integer to build an array around.
+    /// @param b The second integer to build an array around.
+    /// @param c The third integer to build an array around.
+    /// @return array The newly allocated array including `a`, `b` and `c` as the
     /// only items.
-    function arrayFrom(uint256 a_, uint256 b_, uint256 c_, uint256 d_, uint256 e_)
+    function arrayFrom(uint256 a, uint256 b, uint256 c) internal pure returns (uint256[] memory array) {
+        assembly ("memory-safe") {
+            array := mload(0x40)
+            mstore(array, 3)
+            mstore(add(array, 0x20), a)
+            mstore(add(array, 0x40), b)
+            mstore(add(array, 0x60), c)
+            mstore(0x40, add(array, 0x80))
+        }
+    }
+
+    /// Building arrays from literal components is a common task that introduces
+    /// boilerplate that is either inefficient or error prone.
+    /// @param a The first integer to build an array around.
+    /// @param b The second integer to build an array around.
+    /// @param c The third integer to build an array around.
+    /// @param d The fourth integer to build an array around.
+    /// @return array The newly allocated array including `a`, `b`, `c` and `d` as the
+    /// only items.
+    function arrayFrom(uint256 a, uint256 b, uint256 c, uint256 d) internal pure returns (uint256[] memory array) {
+        assembly ("memory-safe") {
+            array := mload(0x40)
+            mstore(array, 4)
+            mstore(add(array, 0x20), a)
+            mstore(add(array, 0x40), b)
+            mstore(add(array, 0x60), c)
+            mstore(add(array, 0x80), d)
+            mstore(0x40, add(array, 0xA0))
+        }
+    }
+
+    /// Building arrays from literal components is a common task that introduces
+    /// boilerplate that is either inefficient or error prone.
+    /// @param a The first integer to build an array around.
+    /// @param b The second integer to build an array around.
+    /// @param c The third integer to build an array around.
+    /// @param d The fourth integer to build an array around.
+    /// @param e The fifth integer to build an array around.
+    /// @return array The newly allocated array including `a`, `b`, `c`, `d` and
+    /// `e` as the only items.
+    function arrayFrom(uint256 a, uint256 b, uint256 c, uint256 d, uint256 e)
         internal
         pure
-        returns (uint256[] memory)
+        returns (uint256[] memory array)
     {
-        uint256[] memory array_ = new uint256[](5);
         assembly ("memory-safe") {
-            mstore(add(array_, 0x20), a_)
-            mstore(add(array_, 0x40), b_)
-            mstore(add(array_, 0x60), c_)
-            mstore(add(array_, 0x80), d_)
-            mstore(add(array_, 0xA0), e_)
+            array := mload(0x40)
+            mstore(array, 5)
+            mstore(add(array, 0x20), a)
+            mstore(add(array, 0x40), b)
+            mstore(add(array, 0x60), c)
+            mstore(add(array, 0x80), d)
+            mstore(add(array, 0xA0), e)
+            mstore(0x40, add(array, 0xC0))
         }
-        return array_;
     }
 
     /// Building arrays from literal components is a common task that introduces
     /// boilerplate that is either inefficient or error prone.
-    /// @param a_ the first integer to build an array around.
-    /// @param b_ the second integer to build an array around.
-    /// @param c_ the third integer to build an array around.
-    /// @param d_ the fourth integer to build an array around.
-    /// @param e_ the fifth integer to build an array around.
-    /// @param f_ the sixth integer to build an array around.
-    /// @return the newly allocated array including a_, b_, c_, d_, e_ and f_ as
-    /// the only items.
-    function arrayFrom(uint256 a_, uint256 b_, uint256 c_, uint256 d_, uint256 e_, uint256 f_)
+    /// @param a The first integer to build an array around.
+    /// @param b The second integer to build an array around.
+    /// @param c The third integer to build an array around.
+    /// @param d The fourth integer to build an array around.
+    /// @param e The fifth integer to build an array around.
+    /// @param f The sixth integer to build an array around.
+    /// @return array The newly allocated array including `a`, `b`, `c`, `d`, `e`
+    /// and `f` as the only items.
+    function arrayFrom(uint256 a, uint256 b, uint256 c, uint256 d, uint256 e, uint256 f)
         internal
         pure
-        returns (uint256[] memory)
+        returns (uint256[] memory array)
     {
-        uint256[] memory array_ = new uint256[](6);
         assembly ("memory-safe") {
-            mstore(add(array_, 0x20), a_)
-            mstore(add(array_, 0x40), b_)
-            mstore(add(array_, 0x60), c_)
-            mstore(add(array_, 0x80), d_)
-            mstore(add(array_, 0xA0), e_)
-            mstore(add(array_, 0xC0), f_)
+            array := mload(0x40)
+            mstore(array, 6)
+            mstore(add(array, 0x20), a)
+            mstore(add(array, 0x40), b)
+            mstore(add(array, 0x60), c)
+            mstore(add(array, 0x80), d)
+            mstore(add(array, 0xA0), e)
+            mstore(add(array, 0xC0), f)
+            mstore(0x40, add(array, 0xE0))
         }
-        return array_;
     }
 
     /// Building arrays from literal components is a common task that introduces
     /// boilerplate that is either inefficient or error prone.
-    /// @param a_ The head of the new array.
-    /// @param tail_ The tail of the new array.
-    /// @return The new array.
-    function arrayFrom(uint256 a_, uint256[] memory tail_) internal pure returns (uint256[] memory) {
-        uint256[] memory array_;
+    /// @param a The head of the new array.
+    /// @param tail The tail of the new array.
+    /// @return array The new array.
+    function arrayFrom(uint256 a, uint256[] memory tail) internal pure returns (uint256[] memory array) {
         assembly ("memory-safe") {
-            let length_ := add(mload(tail_), 1)
-            let outputCursor_ := mload(0x40)
-            array_ := outputCursor_
-            let outputEnd_ := add(outputCursor_, add(0x20, mul(length_, 0x20)))
-            mstore(0x40, outputEnd_)
+            let length := add(mload(tail), 1)
+            let outputCursor := mload(0x40)
+            array := outputCursor
+            let outputEnd := add(outputCursor, add(0x20, mul(length, 0x20)))
+            mstore(0x40, outputEnd)
 
-            mstore(outputCursor_, length_)
-            mstore(add(outputCursor_, 0x20), a_)
+            mstore(outputCursor, length)
+            mstore(add(outputCursor, 0x20), a)
 
             for {
-                outputCursor_ := add(outputCursor_, 0x40)
-                let inputCursor_ := add(tail_, 0x20)
-            } lt(outputCursor_, outputEnd_) {
-                outputCursor_ := add(outputCursor_, 0x20)
-                inputCursor_ := add(inputCursor_, 0x20)
-            } { mstore(outputCursor_, mload(inputCursor_)) }
+                outputCursor := add(outputCursor, 0x40)
+                let inputCursor := add(tail, 0x20)
+            } lt(outputCursor, outputEnd) {
+                outputCursor := add(outputCursor, 0x20)
+                inputCursor := add(inputCursor, 0x20)
+            } { mstore(outputCursor, mload(inputCursor)) }
         }
-        return array_;
     }
 
     /// Building arrays from literal components is a common task that introduces
     /// boilerplate that is either inefficient or error prone.
-    /// @param a_ The first item of the new array.
-    /// @param b_ The second item of the new array.
-    /// @param tail_ The tail of the new array.
-    /// @return The new array.
-    function arrayFrom(uint256 a_, uint256 b_, uint256[] memory tail_) internal pure returns (uint256[] memory) {
-        uint256[] memory array_;
+    /// @param a The first item of the new array.
+    /// @param b The second item of the new array.
+    /// @param tail The tail of the new array.
+    /// @return array The new array.
+    function arrayFrom(uint256 a, uint256 b, uint256[] memory tail) internal pure returns (uint256[] memory array) {
         assembly ("memory-safe") {
-            let length_ := add(mload(tail_), 2)
-            let outputCursor_ := mload(0x40)
-            array_ := outputCursor_
-            let outputEnd_ := add(outputCursor_, add(0x20, mul(length_, 0x20)))
-            mstore(0x40, outputEnd_)
+            let length := add(mload(tail), 2)
+            let outputCursor := mload(0x40)
+            array := outputCursor
+            let outputEnd := add(outputCursor, add(0x20, mul(length, 0x20)))
+            mstore(0x40, outputEnd)
 
-            mstore(outputCursor_, length_)
-            mstore(add(outputCursor_, 0x20), a_)
-            mstore(add(outputCursor_, 0x40), b_)
+            mstore(outputCursor, length)
+            mstore(add(outputCursor, 0x20), a)
+            mstore(add(outputCursor, 0x40), b)
 
             for {
-                outputCursor_ := add(outputCursor_, 0x60)
-                let inputCursor_ := add(tail_, 0x20)
-            } lt(outputCursor_, outputEnd_) {
-                outputCursor_ := add(outputCursor_, 0x20)
-                inputCursor_ := add(inputCursor_, 0x20)
-            } { mstore(outputCursor_, mload(inputCursor_)) }
+                outputCursor := add(outputCursor, 0x60)
+                let inputCursor := add(tail, 0x20)
+            } lt(outputCursor, outputEnd) {
+                outputCursor := add(outputCursor, 0x20)
+                inputCursor := add(inputCursor, 0x20)
+            } { mstore(outputCursor, mload(inputCursor)) }
         }
-        return array_;
     }
 
     /// Solidity provides no way to change the length of in-memory arrays but
@@ -215,14 +235,14 @@ library LibUint256Array {
     /// no worse than Solidity's native behaviour of leaking everything always.
     /// The array is MUTATED in place so there is no return value and there is
     /// no new allocation or copying of data either.
-    /// @param array_ The array to truncate.
-    /// @param newLength_ The new length of the array after truncation.
-    function truncate(uint256[] memory array_, uint256 newLength_) internal pure {
-        if (newLength_ > array_.length) {
-            revert OutOfBoundsTruncate(array_.length, newLength_);
+    /// @param array The array to truncate.
+    /// @param newLength The new length of the array after truncation.
+    function truncate(uint256[] memory array, uint256 newLength) internal pure {
+        if (newLength > array.length) {
+            revert OutOfBoundsTruncate(array.length, newLength);
         }
         assembly ("memory-safe") {
-            mstore(array_, newLength_)
+            mstore(array, newLength)
         }
     }
 
@@ -250,49 +270,49 @@ library LibUint256Array {
     /// the extend array after calling this function as it is never mutated, it
     /// is only copied from.
     ///
-    /// @param b_ The base integer array that will be extended by `extend_`.
-    /// @param e_ The extend integer array that extends `base_`.
-    function unsafeExtend(uint256[] memory b_, uint256[] memory e_) internal pure returns (uint256[] memory final_) {
+    /// @param b The base integer array that will be extended by `e`.
+    /// @param e The extend integer array that extends `b`.
+    /// @return extended The extended array of `b` extended by `e`.
+    function unsafeExtend(uint256[] memory b, uint256[] memory e) internal pure returns (uint256[] memory extended) {
         assembly ("memory-safe") {
             // Slither doesn't recognise assembly function names as mixed case
             // even if they are.
             // https://github.com/crytic/slither/issues/1815
             //slither-disable-next-line naming-convention
-            function extendInline(base_, extend_) -> baseAfter_ {
-                let outputCursor_ := mload(0x40)
-                let baseLength_ := mload(base_)
-                let baseEnd_ := add(base_, add(0x20, mul(baseLength_, 0x20)))
+            function extendInline(base, extend) -> baseAfter {
+                let outputCursor := mload(0x40)
+                let baseLength := mload(base)
+                let baseEnd := add(base, add(0x20, mul(baseLength, 0x20)))
 
                 // If base is NOT the last thing in allocated memory, allocate,
                 // copy and recurse.
-                switch eq(outputCursor_, baseEnd_)
+                switch eq(outputCursor, baseEnd)
                 case 0 {
-                    let newBase_ := outputCursor_
-                    let newBaseEnd_ := add(newBase_, sub(baseEnd_, base_))
-                    mstore(0x40, newBaseEnd_)
-                    // mstore(newBase_, baseLength_)
-                    for { let inputCursor_ := base_ } lt(outputCursor_, newBaseEnd_) {
-                        inputCursor_ := add(inputCursor_, 0x20)
-                        outputCursor_ := add(outputCursor_, 0x20)
-                    } { mstore(outputCursor_, mload(inputCursor_)) }
+                    let newBase := outputCursor
+                    let newBaseEnd := add(newBase, sub(baseEnd, base))
+                    mstore(0x40, newBaseEnd)
+                    for { let inputCursor := base } lt(outputCursor, newBaseEnd) {
+                        inputCursor := add(inputCursor, 0x20)
+                        outputCursor := add(outputCursor, 0x20)
+                    } { mstore(outputCursor, mload(inputCursor)) }
 
-                    baseAfter_ := extendInline(newBase_, extend_)
+                    baseAfter := extendInline(newBase, extend)
                 }
                 case 1 {
-                    let totalLength_ := add(baseLength_, mload(extend_))
-                    let outputEnd_ := add(base_, add(0x20, mul(totalLength_, 0x20)))
-                    mstore(base_, totalLength_)
+                    let totalLength_ := add(baseLength, mload(extend))
+                    let outputEnd_ := add(base, add(0x20, mul(totalLength_, 0x20)))
+                    mstore(base, totalLength_)
                     mstore(0x40, outputEnd_)
-                    for { let inputCursor_ := add(extend_, 0x20) } lt(outputCursor_, outputEnd_) {
-                        inputCursor_ := add(inputCursor_, 0x20)
-                        outputCursor_ := add(outputCursor_, 0x20)
-                    } { mstore(outputCursor_, mload(inputCursor_)) }
+                    for { let inputCursor := add(extend, 0x20) } lt(outputCursor, outputEnd_) {
+                        inputCursor := add(inputCursor, 0x20)
+                        outputCursor := add(outputCursor, 0x20)
+                    } { mstore(outputCursor, mload(inputCursor)) }
 
-                    baseAfter_ := base_
+                    baseAfter := base
                 }
             }
 
-            final_ := extendInline(b_, e_)
+            extended := extendInline(b, e)
         }
     }
 }

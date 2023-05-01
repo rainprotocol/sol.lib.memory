@@ -2,16 +2,50 @@
 pragma solidity ^0.8.18;
 
 library LibUint256MatrixSlow {
-    function matrixFromSlow(uint256[] memory a_) internal pure returns (uint256[][] memory) {
-        uint256[][] memory matrix_ = new uint256[][](1);
-        matrix_[0] = a_;
-        return matrix_;
+    function compareMatrices(uint256[][] memory a, uint256[][] memory b, uint256 expectedLength_)
+        internal
+        pure
+        returns (bool)
+    {
+        bool equal = true;
+        equal = equal && (a.length == expectedLength_);
+        equal = equal && (a.length == b.length);
+        for (uint256 i = 0; i < a.length; i++) {
+            uint256 hashesEqual;
+            uint256[] memory ai = a[i];
+            uint256[] memory bi = b[i];
+            assembly ("memory-safe") {
+                hashesEqual :=
+                    eq(keccak256(ai, mul(0x20, add(mload(ai), 1))), keccak256(bi, mul(0x20, add(mload(bi), 1))))
+            }
+            equal = equal && (hashesEqual > 0);
+            if (!equal) break;
+        }
+        return equal;
     }
 
-    function matrixFromSlow(uint256[] memory a_, uint256[] memory b_) internal pure returns (uint256[][] memory) {
-        uint256[][] memory matrix_ = new uint256[][](2);
-        matrix_[0] = a_;
-        matrix_[1] = b_;
-        return matrix_;
+    function matrixFromSlow(uint256[] memory a) internal pure returns (uint256[][] memory) {
+        uint256[][] memory matrix = new uint256[][](1);
+        matrix[0] = a;
+        return matrix;
+    }
+
+    function matrixFromSlow(uint256[] memory a, uint256[] memory b) internal pure returns (uint256[][] memory) {
+        uint256[][] memory matrix = new uint256[][](2);
+        matrix[0] = a;
+        matrix[1] = b;
+        return matrix;
+    }
+
+    function matrixFromSlow(uint256[] memory a, uint256[] memory b, uint256[] memory c)
+        internal
+        pure
+        returns (uint256[][] memory)
+    {
+        uint256[][] memory matrix = new uint256[][](3);
+        matrix[0] = a;
+        matrix[1] = b;
+        matrix[2] = c;
+        return matrix;
     }
 }

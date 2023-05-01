@@ -25,17 +25,6 @@ library LibPointer {
         }
     }
 
-    /// Cast a `Pointer` to `bytes` without modification or safety checks.
-    /// The caller MUST ensure the pointer is to a valid region of memory for
-    /// some `uint256[]`.
-    /// @param pointer The pointer to cast to `uint256[]`.
-    /// @return array The cast `uint256[]`.
-    function unsafeAsUint256Array(Pointer pointer) internal pure returns (uint256[] memory array) {
-        assembly ("memory-safe") {
-            array := pointer
-        }
-    }
-
     /// Increase some pointer by a number of bytes.
     ///
     /// This is UNSAFE because it can silently overflow or point beyond some

@@ -4,12 +4,10 @@ pragma solidity ^0.8.18;
 import "forge-std/Test.sol";
 import "../src/LibPointer.sol";
 import "../src/LibBytes.sol";
-import "../src/LibUint256Array.sol";
 
 contract LibPointerTest is Test {
     using LibPointer for Pointer;
     using LibBytes for bytes;
-    using LibUint256Array for uint256[];
 
     function testUnsafeAsBytesRoundBytes(bytes memory data) public {
         assertEq(data, data.startPointer().unsafeAsBytes());
@@ -17,14 +15,6 @@ contract LibPointerTest is Test {
 
     function testUnsafeAsBytesRound(Pointer pointer) public {
         assertEq(Pointer.unwrap(pointer), Pointer.unwrap(pointer.unsafeAsBytes().startPointer()));
-    }
-
-    function testUnsafeAsUint256ArrayRoundUint256Array(uint256[] memory array) public {
-        assertEq(array, array.startPointer().unsafeAsUint256Array());
-    }
-
-    function testUnsafeAsUint256ArrayRound(Pointer pointer) public {
-        assertEq(Pointer.unwrap(pointer), Pointer.unwrap(pointer.unsafeAsUint256Array().startPointer()));
     }
 
     function testUnsafeAddBytes(uint32 pointer, uint32 n) public {
