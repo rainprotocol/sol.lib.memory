@@ -96,6 +96,5 @@ library LibUint256Matrix {
             mstore(add(matrix, 0x40), b)
             mstore(add(matrix, 0x60), c)
         }
-        return matrix;
     }
 }

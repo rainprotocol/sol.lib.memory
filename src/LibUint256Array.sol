@@ -83,63 +83,66 @@ library LibUint256Array {
 
     /// Building arrays from literal components is a common task that introduces
     /// boilerplate that is either inefficient or error prone.
-    /// @param a_ the first integer to build an array around.
-    /// @param b_ the second integer to build an array around.
-    /// @param c_ the third integer to build an array around.
-    /// @return the newly allocated array including a_, b_ and c_ as the only
-    /// items.
-    function arrayFrom(uint256 a_, uint256 b_, uint256 c_) internal pure returns (uint256[] memory) {
-        uint256[] memory array_ = new uint256[](3);
-        assembly ("memory-safe") {
-            mstore(add(array_, 0x20), a_)
-            mstore(add(array_, 0x40), b_)
-            mstore(add(array_, 0x60), c_)
-        }
-        return array_;
-    }
-
-    /// Building arrays from literal components is a common task that introduces
-    /// boilerplate that is either inefficient or error prone.
-    /// @param a_ the first integer to build an array around.
-    /// @param b_ the second integer to build an array around.
-    /// @param c_ the third integer to build an array around.
-    /// @param d_ the fourth integer to build an array around.
-    /// @return the newly allocated array including a_, b_, c_ and d_ as the only
-    /// items.
-    function arrayFrom(uint256 a_, uint256 b_, uint256 c_, uint256 d_) internal pure returns (uint256[] memory) {
-        uint256[] memory array_ = new uint256[](4);
-        assembly ("memory-safe") {
-            mstore(add(array_, 0x20), a_)
-            mstore(add(array_, 0x40), b_)
-            mstore(add(array_, 0x60), c_)
-            mstore(add(array_, 0x80), d_)
-        }
-        return array_;
-    }
-
-    /// Building arrays from literal components is a common task that introduces
-    /// boilerplate that is either inefficient or error prone.
-    /// @param a_ the first integer to build an array around.
-    /// @param b_ the second integer to build an array around.
-    /// @param c_ the third integer to build an array around.
-    /// @param d_ the fourth integer to build an array around.
-    /// @param e_ the fifth integer to build an array around.
-    /// @return the newly allocated array including a_, b_, c_, d_ and e_ as the
+    /// @param a The first integer to build an array around.
+    /// @param b The second integer to build an array around.
+    /// @param c The third integer to build an array around.
+    /// @return array The newly allocated array including `a`, `b` and `c` as the
     /// only items.
-    function arrayFrom(uint256 a_, uint256 b_, uint256 c_, uint256 d_, uint256 e_)
+    function arrayFrom(uint256 a, uint256 b, uint256 c) internal pure returns (uint256[] memory array) {
+        assembly ("memory-safe") {
+            array := mload(0x40)
+            mstore(0x40, add(array, 0x80))
+            mstore(array, 3)
+            mstore(add(array, 0x20), a)
+            mstore(add(array, 0x40), b)
+            mstore(add(array, 0x60), c)
+        }
+    }
+
+    /// Building arrays from literal components is a common task that introduces
+    /// boilerplate that is either inefficient or error prone.
+    /// @param a The first integer to build an array around.
+    /// @param b The second integer to build an array around.
+    /// @param c The third integer to build an array around.
+    /// @param d The fourth integer to build an array around.
+    /// @return array The newly allocated array including `a`, `b`, `c` and `d` as the
+    /// only items.
+    function arrayFrom(uint256 a, uint256 b, uint256 c, uint256 d) internal pure returns (uint256[] memory array) {
+        assembly ("memory-safe") {
+            array := mload(0x40)
+            mstore(0x40, add(array, 0xA0))
+            mstore(array, 4)
+            mstore(add(array, 0x20), a)
+            mstore(add(array, 0x40), b)
+            mstore(add(array, 0x60), c)
+            mstore(add(array, 0x80), d)
+        }
+    }
+
+    /// Building arrays from literal components is a common task that introduces
+    /// boilerplate that is either inefficient or error prone.
+    /// @param a The first integer to build an array around.
+    /// @param b The second integer to build an array around.
+    /// @param c The third integer to build an array around.
+    /// @param d The fourth integer to build an array around.
+    /// @param e The fifth integer to build an array around.
+    /// @return array The newly allocated array including a, b, c, d and e as the
+    /// only items.
+    function arrayFrom(uint256 a, uint256 b, uint256 c, uint256 d, uint256 e)
         internal
         pure
-        returns (uint256[] memory)
+        returns (uint256[] memory array)
     {
-        uint256[] memory array_ = new uint256[](5);
         assembly ("memory-safe") {
-            mstore(add(array_, 0x20), a_)
-            mstore(add(array_, 0x40), b_)
-            mstore(add(array_, 0x60), c_)
-            mstore(add(array_, 0x80), d_)
-            mstore(add(array_, 0xA0), e_)
+            array := mload(0x40)
+            mstore(0x40, add(array, 0xc0))
+            mstore(array, 5)
+            mstore(add(array, 0x20), a)
+            mstore(add(array, 0x40), b)
+            mstore(add(array, 0x60), c)
+            mstore(add(array, 0x80), d)
+            mstore(add(array, 0xA0), e)
         }
-        return array_;
     }
 
     /// Building arrays from literal components is a common task that introduces

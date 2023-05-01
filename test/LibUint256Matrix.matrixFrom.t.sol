@@ -17,6 +17,7 @@ contract LibUint256ArrayMatrixFromTest is Test {
     function testMatrixFromA(uint256[] memory a) public {
         uint256[][] memory matrix = a.matrixFrom();
         assertEq(Pointer.unwrap(LibPointer.allocatedMemoryPointer()), Pointer.unwrap(matrix.endPointer()));
+        assertEq(Pointer.unwrap(matrix.endPointer()) - Pointer.unwrap(matrix.dataPointer()), matrix.length * 0x20);
         assertTrue(LibMemory.memoryIsAligned());
         uint256[][] memory matrixSlow = a.matrixFromSlow();
         assertTrue(LibUint256MatrixSlow.compareMatrices(matrix, matrixSlow, 1));
@@ -33,6 +34,7 @@ contract LibUint256ArrayMatrixFromTest is Test {
     function testMatrixFromAB(uint256[] memory a, uint256[] memory b) public {
         uint256[][] memory matrix = LibUint256Matrix.matrixFrom(a, b);
         assertEq(Pointer.unwrap(LibPointer.allocatedMemoryPointer()), Pointer.unwrap(matrix.endPointer()));
+        assertEq(Pointer.unwrap(matrix.endPointer()) - Pointer.unwrap(matrix.dataPointer()), matrix.length * 0x20);
         assertTrue(LibMemory.memoryIsAligned());
         uint256[][] memory matrixSlow = LibUint256MatrixSlow.matrixFromSlow(a, b);
         assertTrue(LibUint256MatrixSlow.compareMatrices(matrix, matrixSlow, 2));
@@ -49,6 +51,7 @@ contract LibUint256ArrayMatrixFromTest is Test {
     function testMatrixFromABC(uint256[] memory a, uint256[] memory b, uint256[] memory c) public {
         uint256[][] memory matrix = LibUint256Matrix.matrixFrom(a, b, c);
         assertEq(Pointer.unwrap(LibPointer.allocatedMemoryPointer()), Pointer.unwrap(matrix.endPointer()));
+        assertEq(Pointer.unwrap(matrix.endPointer()) - Pointer.unwrap(matrix.dataPointer()), matrix.length * 0x20);
         assertTrue(LibMemory.memoryIsAligned());
         uint256[][] memory matrixSlow = LibUint256MatrixSlow.matrixFromSlow(a, b, c);
         assertTrue(LibUint256MatrixSlow.compareMatrices(matrix, matrixSlow, 3));
