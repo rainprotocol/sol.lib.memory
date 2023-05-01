@@ -59,9 +59,9 @@ library LibUint256Array {
     function arrayFrom(uint256 a) internal pure returns (uint256[] memory array) {
         assembly ("memory-safe") {
             array := mload(0x40)
-            mstore(0x40, add(array, 0x40))
             mstore(array, 1)
             mstore(add(array, 0x20), a)
+            mstore(0x40, add(array, 0x40))
         }
     }
 
@@ -74,10 +74,10 @@ library LibUint256Array {
     function arrayFrom(uint256 a, uint256 b) internal pure returns (uint256[] memory array) {
         assembly ("memory-safe") {
             array := mload(0x40)
-            mstore(0x40, add(array, 0x60))
             mstore(array, 2)
             mstore(add(array, 0x20), a)
             mstore(add(array, 0x40), b)
+            mstore(0x40, add(array, 0x60))
         }
     }
 
@@ -91,11 +91,11 @@ library LibUint256Array {
     function arrayFrom(uint256 a, uint256 b, uint256 c) internal pure returns (uint256[] memory array) {
         assembly ("memory-safe") {
             array := mload(0x40)
-            mstore(0x40, add(array, 0x80))
             mstore(array, 3)
             mstore(add(array, 0x20), a)
             mstore(add(array, 0x40), b)
             mstore(add(array, 0x60), c)
+            mstore(0x40, add(array, 0x80))
         }
     }
 
@@ -110,12 +110,12 @@ library LibUint256Array {
     function arrayFrom(uint256 a, uint256 b, uint256 c, uint256 d) internal pure returns (uint256[] memory array) {
         assembly ("memory-safe") {
             array := mload(0x40)
-            mstore(0x40, add(array, 0xA0))
             mstore(array, 4)
             mstore(add(array, 0x20), a)
             mstore(add(array, 0x40), b)
             mstore(add(array, 0x60), c)
             mstore(add(array, 0x80), d)
+            mstore(0x40, add(array, 0xA0))
         }
     }
 
@@ -135,13 +135,13 @@ library LibUint256Array {
     {
         assembly ("memory-safe") {
             array := mload(0x40)
-            mstore(0x40, add(array, 0xC0))
             mstore(array, 5)
             mstore(add(array, 0x20), a)
             mstore(add(array, 0x40), b)
             mstore(add(array, 0x60), c)
             mstore(add(array, 0x80), d)
             mstore(add(array, 0xA0), e)
+            mstore(0x40, add(array, 0xC0))
         }
     }
 
@@ -162,7 +162,6 @@ library LibUint256Array {
     {
         assembly ("memory-safe") {
             array := mload(0x40)
-            mstore(0x40, add(array, 0xE0))
             mstore(array, 6)
             mstore(add(array, 0x20), a)
             mstore(add(array, 0x40), b)
@@ -170,6 +169,7 @@ library LibUint256Array {
             mstore(add(array, 0x80), d)
             mstore(add(array, 0xA0), e)
             mstore(add(array, 0xC0), f)
+            mstore(0x40, add(array, 0xE0))
         }
     }
 

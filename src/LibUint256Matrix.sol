@@ -54,9 +54,9 @@ library LibUint256Matrix {
     function matrixFrom(uint256[] memory a) internal pure returns (uint256[][] memory matrix) {
         assembly ("memory-safe") {
             matrix := mload(0x40)
-            mstore(0x40, add(matrix, 0x40))
             mstore(matrix, 1)
             mstore(add(matrix, 0x20), a)
+            mstore(0x40, add(matrix, 0x40))
         }
     }
 
@@ -69,10 +69,10 @@ library LibUint256Matrix {
     function matrixFrom(uint256[] memory a, uint256[] memory b) internal pure returns (uint256[][] memory matrix) {
         assembly ("memory-safe") {
             matrix := mload(0x40)
-            mstore(0x40, add(matrix, 0x60))
             mstore(matrix, 2)
             mstore(add(matrix, 0x20), a)
             mstore(add(matrix, 0x40), b)
+            mstore(0x40, add(matrix, 0x60))
         }
     }
 
@@ -90,11 +90,11 @@ library LibUint256Matrix {
     {
         assembly ("memory-safe") {
             matrix := mload(0x40)
-            mstore(0x40, add(matrix, 0x80))
             mstore(matrix, 3)
             mstore(add(matrix, 0x20), a)
             mstore(add(matrix, 0x40), b)
             mstore(add(matrix, 0x60), c)
+            mstore(0x40, add(matrix, 0x80))
         }
     }
 }
