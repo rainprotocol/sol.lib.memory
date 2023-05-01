@@ -15,6 +15,8 @@ library LibUint256Array {
     using LibUint256Array for uint256[];
 
     /// Pointer to the start (length prefix) of a `uint256[]`.
+    /// @param array The array to get the start pointer of.
+    /// @return pointer The pointer to the start of `array`.
     function startPointer(uint256[] memory array) internal pure returns (Pointer pointer) {
         assembly ("memory-safe") {
             pointer := array
@@ -22,6 +24,8 @@ library LibUint256Array {
     }
 
     /// Pointer to the data of a `uint256[]` NOT the length prefix.
+    /// @param array The array to get the data pointer of.
+    /// @return pointer The pointer to the data of `array`.
     function dataPointer(uint256[] memory array) internal pure returns (Pointer pointer) {
         assembly ("memory-safe") {
             pointer := add(array, 0x20)
@@ -29,9 +33,22 @@ library LibUint256Array {
     }
 
     /// Pointer to the end of the allocated memory of an array.
+    /// @param array The array to get the end pointer of.
+    /// @return pointer The pointer to the end of `array`.
     function endPointer(uint256[] memory array) internal pure returns (Pointer pointer) {
         assembly ("memory-safe") {
             pointer := add(array, add(0x20, mul(0x20, mload(array))))
+        }
+    }
+
+    /// Cast a `Pointer` to `uint256[]` without modification or safety checks.
+    /// The caller MUST ensure the pointer is to a valid region of memory for
+    /// some `uint256[]`.
+    /// @param pointer The pointer to cast to `uint256[]`.
+    /// @return array The cast `uint256[]`.
+    function unsafeAsUint256Array(Pointer pointer) internal pure returns (uint256[] memory array) {
+        assembly ("memory-safe") {
+            array := pointer
         }
     }
 

@@ -12,20 +12,14 @@ contract LibUint256ArrayMatrixFromTest is Test {
     using LibUint256Array for uint256;
     using LibUint256Matrix for uint256[];
     using LibUint256MatrixSlow for uint256[];
-
-    function compareMatrices(uint256[][] memory a, uint256[][] memory b, uint256 expectedLength_) internal {
-        assertEq(a.length, expectedLength_);
-        assertEq(a.length, b.length);
-        for (uint256 i_ = 0; i_ < a.length; i_++) {
-            assertEq(a[i_], b[i_]);
-        }
-    }
+    using LibUint256Matrix for uint256[][];
 
     function testMatrixFromA(uint256[] memory a) public {
         uint256[][] memory matrix = a.matrixFrom();
+        assertEq(Pointer.unwrap(LibPointer.allocatedMemoryPointer()), Pointer.unwrap(matrix.endPointer()));
         assertTrue(LibMemory.memoryIsAligned());
         uint256[][] memory matrixSlow = a.matrixFromSlow();
-        compareMatrices(matrix, matrixSlow, 1);
+        assertTrue(LibUint256MatrixSlow.compareMatrices(matrix, matrixSlow, 1));
     }
 
     function testMatrixFromAGas0() public pure returns (uint256[][] memory) {
@@ -38,9 +32,10 @@ contract LibUint256ArrayMatrixFromTest is Test {
 
     function testMatrixFromAB(uint256[] memory a, uint256[] memory b) public {
         uint256[][] memory matrix = LibUint256Matrix.matrixFrom(a, b);
+        assertEq(Pointer.unwrap(LibPointer.allocatedMemoryPointer()), Pointer.unwrap(matrix.endPointer()));
         assertTrue(LibMemory.memoryIsAligned());
         uint256[][] memory matrixSlow = LibUint256MatrixSlow.matrixFromSlow(a, b);
-        compareMatrices(matrix, matrixSlow, 2);
+        assertTrue(LibUint256MatrixSlow.compareMatrices(matrix, matrixSlow, 2));
     }
 
     function testMatrixFromABGas0() public pure returns (uint256[][] memory) {
@@ -53,9 +48,10 @@ contract LibUint256ArrayMatrixFromTest is Test {
 
     function testMatrixFromABC(uint256[] memory a, uint256[] memory b, uint256[] memory c) public {
         uint256[][] memory matrix = LibUint256Matrix.matrixFrom(a, b, c);
+        assertEq(Pointer.unwrap(LibPointer.allocatedMemoryPointer()), Pointer.unwrap(matrix.endPointer()));
         assertTrue(LibMemory.memoryIsAligned());
         uint256[][] memory matrixSlow = LibUint256MatrixSlow.matrixFromSlow(a, b, c);
-        compareMatrices(matrix, matrixSlow, 3);
+        assertTrue(LibUint256MatrixSlow.compareMatrices(matrix, matrixSlow, 3));
     }
 
     function testMatrixFromABCGas0() public pure returns (uint256[][] memory) {
