@@ -54,14 +54,15 @@ library LibUint256Array {
 
     /// Building arrays from literal components is a common task that introduces
     /// boilerplate that is either inefficient or error prone.
-    /// @param a_ a single integer to build an array around.
-    /// @return the newly allocated array including a_ as a single item.
-    function arrayFrom(uint256 a_) internal pure returns (uint256[] memory) {
-        uint256[] memory array_ = new uint256[](1);
+    /// @param a a single integer to build an array around.
+    /// @return array the newly allocated array including `a` as a single item.
+    function arrayFrom(uint256 a) internal pure returns (uint256[] memory array) {
         assembly ("memory-safe") {
-            mstore(add(array_, 0x20), a_)
+            array := mload(0x40)
+            mstore(0x40, add(array, 0x40))
+            mstore(array, 1)
+            mstore(add(array, 0x20), a)
         }
-        return array_;
     }
 
     /// Building arrays from literal components is a common task that introduces
