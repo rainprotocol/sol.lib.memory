@@ -2,16 +2,28 @@
 pragma solidity ^0.8.18;
 
 library LibUint256MatrixSlow {
-    function matrixFromSlow(uint256[] memory a_) internal pure returns (uint256[][] memory) {
-        uint256[][] memory matrix_ = new uint256[][](1);
-        matrix_[0] = a_;
-        return matrix_;
+    function matrixFromSlow(uint256[] memory a) internal pure returns (uint256[][] memory) {
+        uint256[][] memory matrix = new uint256[][](1);
+        matrix[0] = a;
+        return matrix;
     }
 
-    function matrixFromSlow(uint256[] memory a_, uint256[] memory b_) internal pure returns (uint256[][] memory) {
-        uint256[][] memory matrix_ = new uint256[][](2);
-        matrix_[0] = a_;
-        matrix_[1] = b_;
-        return matrix_;
+    function matrixFromSlow(uint256[] memory a, uint256[] memory b) internal pure returns (uint256[][] memory) {
+        uint256[][] memory matrix = new uint256[][](2);
+        matrix[0] = a;
+        matrix[1] = b;
+        return matrix;
+    }
+
+    function matrixFromSlow(uint256[] memory a, uint256[] memory b, uint256[] memory c)
+        internal
+        pure
+        returns (uint256[][] memory)
+    {
+        uint256[][] memory matrix = new uint256[][](3);
+        matrix[0] = a;
+        matrix[1] = b;
+        matrix[2] = c;
+        return matrix;
     }
 }
