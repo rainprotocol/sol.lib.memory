@@ -32,6 +32,11 @@ library LibStackSentinel {
     /// an empty/optional/absent value they MAY provided a sentinel for a zero
     /// length array and the calling contract SHOULD handle this.
     ///
+    /// If `lower` is smaller than `n` it is possible that this will underflow
+    /// which will result in the evm immediately running out of gas as it
+    /// attempts to loop from infinity. There is no explicit underflow check but
+    /// there is no way to underflow without reverting due to gas.
+    ///
     /// @param upper Pointer to the top of the stack range.
     /// @param lower Pointer to the bottom of the stack range.
     /// @param sentinel The value to expect as the sentinel. MUST be present in
@@ -55,6 +60,7 @@ library LibStackSentinel {
         // First pass to find the sentinel.
         assembly ("memory-safe") {
             size := mul(n, 0x20)
+            // An underflow here always results in a revert due to gas.
             for { let cursor := upper } gt(cursor, lower) { cursor := sub(cursor, size) } {
                 let potentialSentinelPointer := sub(cursor, 0x20)
                 if eq(mload(potentialSentinelPointer), sentinel) { sentinelPointer := potentialSentinelPointer }
