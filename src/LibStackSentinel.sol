@@ -5,7 +5,6 @@ import "./LibPointer.sol";
 
 error ZeroStepSize();
 
-error ReservedPointer(Pointer lower);
 error InitialStateUnderflow(Pointer lower, Pointer upper);
 error MissingSentinel(Sentinel sentinel);
 
@@ -47,8 +46,6 @@ library LibStackSentinel {
         pure
         returns (Pointer sentinelPointer, Pointer tuplesPointer)
     {
-        // Can't consume memory reserved by Solidity. Prevents underflow.
-        if (Pointer.unwrap(lower) < 0x80) revert ReservedPointer(lower);
         // Upper must not be less than lower.
         if (Pointer.unwrap(upper) < Pointer.unwrap(lower)) revert InitialStateUnderflow(lower, upper);
 

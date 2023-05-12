@@ -119,11 +119,16 @@ contract LibStackSentinelTest is Test {
         (tuplesPointer);
     }
 
-    function testConsumeSentinelTuplesReservedPointerError(Pointer lower, Pointer upper, Sentinel sentinel) public {
-        vm.assume(Pointer.unwrap(lower) < 0x80);
+    function testConsumeSentinelTuplesUnderflowError(Pointer lower, Pointer upper, Sentinel sentinel, uint256 n)
+        public
+    {
+        vm.assume(Pointer.unwrap(lower) < n);
+        vm.assume(Pointer.unwrap(upper) > Pointer.unwrap(lower));
 
-        vm.expectRevert(abi.encodeWithSelector(ReservedPointer.selector, lower));
-        (Pointer sentinelPointer, Pointer tuplesPointer) = lower.consumeSentinelTuples(upper, sentinel, 2);
+        // Underflow will revert because it will run out of gas attempting to
+        // loop over infinity.
+        vm.expectRevert();
+        (Pointer sentinelPointer, Pointer tuplesPointer) = lower.consumeSentinelTuples(upper, sentinel, n);
         (sentinelPointer);
         (tuplesPointer);
     }
