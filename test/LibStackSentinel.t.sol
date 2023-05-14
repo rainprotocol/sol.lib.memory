@@ -14,23 +14,37 @@ contract LibStackSentinelTest is Test {
     /// Discovered during flow testing. Would revert with missing sentinel and
     /// length of b was 3 instead of 0.
     function testConsumeSentinelTuplesRegression0() public {
-        Sentinel sentinel = Sentinel.wrap(999999);
-        uint256[] memory stack = new uint256[](11);
+        Sentinel sentinel =
+            Sentinel.wrap(115183058774379759847873638693462432260838474092724525396123647190314935293775);
+        uint256[] memory stack = new uint256[](22);
         uint256[4][] memory a;
         uint256[4][] memory b;
         uint256[5][] memory c;
 
-        stack[0] = Sentinel.unwrap(sentinel);
-        stack[1] = Sentinel.unwrap(sentinel);
-        stack[2] = Sentinel.unwrap(sentinel);
-        stack[3] = 1;
-        stack[4] = 2;
-        stack[5] = 3;
-        stack[6] = 4;
-        stack[7] = 5;
-        stack[8] = 6;
-        stack[9] = 7;
-        stack[10] = 8;
+        stack[0] = 115183058774379759847873638693462432260838474092724525396123647190314935293775;
+        stack[1] = 642829559307850963015472508762062935916233390536;
+        stack[2] = 845144691605623761611895262923086603930318432472;
+        stack[3] = 1234;
+        stack[4] = 790541044196308479814548981703200609474602451736;
+        stack[5] = 10000000000000000000;
+        stack[6] = 1050292306917326452020632068237092216166216650590;
+        stack[7] = 10000000000000000000;
+        stack[8] = 5000000000000000000;
+        stack[9] = 86400;
+        stack[10] = 0;
+        stack[11] = 115183058774379759847873638693462432260838474092724525396123647190314935293775;
+        stack[12] = 115183058774379759847873638693462432260838474092724525396123647190314935293775;
+        stack[13] = 115183058774379759847873638693462432260838474092724525396123647190314935293775;
+        stack[14] = 790541044196308479814548981703200609474602451736;
+        stack[15] = 642829559307850963015472508762062935916233390536;
+        stack[16] = 845144691605623761611895262923086603930318432472;
+        stack[17] = 10000000000000000000;
+        stack[18] = 1050292306917326452020632068237092216166216650590;
+        stack[19] = 845144691605623761611895262923086603930318432472;
+        stack[20] = 642829559307850963015472508762062935916233390536;
+        stack[21] = 10000000000000000000;
+
+        uint256[] memory allocateMoreMemory = new uint256[](5);
 
         Pointer stackBottom = stack.dataPointer();
         Pointer stackTop = stack.endPointer();
@@ -169,6 +183,9 @@ contract LibStackSentinelTest is Test {
     function testConsumeSentinelTuplesUnderflowError(Pointer lower, Pointer upper, Sentinel sentinel, uint256 n)
         public
     {
+        // If the sentinel is easy to collide with then it might just match and
+        // not underflow, which defeats the purpose of the test.
+        vm.assume(Sentinel.unwrap(sentinel) > type(uint128).max);
         vm.assume(Pointer.unwrap(lower) < n);
         vm.assume(Pointer.unwrap(upper) > Pointer.unwrap(lower));
 

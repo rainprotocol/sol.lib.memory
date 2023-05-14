@@ -63,7 +63,10 @@ library LibStackSentinel {
             // An underflow here always results in a revert due to gas.
             for { let cursor := upper } gt(cursor, lower) { cursor := sub(cursor, size) } {
                 let potentialSentinelPointer := sub(cursor, 0x20)
-                if eq(mload(potentialSentinelPointer), sentinel) { sentinelPointer := potentialSentinelPointer }
+                if eq(mload(potentialSentinelPointer), sentinel) {
+                    sentinelPointer := potentialSentinelPointer
+                    break
+                }
             }
         }
 
@@ -76,10 +79,7 @@ library LibStackSentinel {
         assembly ("memory-safe") {
             tuplesPointer := mload(0x40)
             let tuplesCursor := add(tuplesPointer, 0x20)
-            for {
-                let cursor := add(sentinelPointer, 0x20)
-                let end := upper
-            } lt(cursor, end) {
+            for { let cursor := add(sentinelPointer, 0x20) } lt(cursor, upper) {
                 tuplesCursor := add(tuplesCursor, 0x20)
                 cursor := add(cursor, size)
             } {
