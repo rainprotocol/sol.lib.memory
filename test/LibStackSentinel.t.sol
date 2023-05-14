@@ -11,6 +11,53 @@ contract LibStackSentinelTest is Test {
     using LibPointer for Pointer;
     using LibStackSentinel for Pointer;
 
+    /// Discovered during flow testing. Would revert with missing sentinel and
+    /// length of b was 3 instead of 0.
+    function testConsumeSentinelTuplesRegression0() public {
+        Sentinel sentinel = Sentinel.wrap(999999);
+        uint256[] memory stack = new uint256[](11);
+        uint256[4][] memory a;
+        uint256[4][] memory b;
+        uint256[5][] memory c;
+
+        stack[0] = Sentinel.unwrap(sentinel);
+        stack[1] = Sentinel.unwrap(sentinel);
+        stack[2] = Sentinel.unwrap(sentinel);
+        stack[3] = 1;
+        stack[4] = 2;
+        stack[5] = 3;
+        stack[6] = 4;
+        stack[7] = 5;
+        stack[8] = 6;
+        stack[9] = 7;
+        stack[10] = 8;
+
+        Pointer stackBottom = stack.dataPointer();
+        Pointer stackTop = stack.endPointer();
+
+        Pointer tuplesPointer;
+        (stackTop, tuplesPointer) = stackBottom.consumeSentinelTuples(stackTop, sentinel, 4);
+
+        assembly ("memory-safe") {
+            a := tuplesPointer
+        }
+        assertEq(a.length, 2);
+
+        (stackTop, tuplesPointer) = stackBottom.consumeSentinelTuples(stackTop, sentinel, 4);
+
+        assembly ("memory-safe") {
+            b := tuplesPointer
+        }
+        assertEq(b.length, 0);
+
+        (stackTop, tuplesPointer) = stackBottom.consumeSentinelTuples(stackTop, sentinel, 5);
+
+        assembly ("memory-safe") {
+            c := tuplesPointer
+        }
+        assertEq(c.length, 0);
+    }
+
     function testConsumeSentinelTuples(uint256[] memory stack, Sentinel sentinel, uint8 sentinelIndex) public {
         for (uint256 i = 0; i < stack.length; i++) {
             //slither-disable-next-line calls-loop
