@@ -15,6 +15,7 @@ contract LibStackSentinelTest is Test {
     /// we stop at the first discovered sentinel.
     function testConsumeSentinelTuplesMultiple(uint256[] memory stack, Sentinel sentinel, uint8 length) public {
         for (uint256 i = 0; i < stack.length; i++) {
+            //slither-disable-next-line calls-loop
             vm.assume(stack[i] != Sentinel.unwrap(sentinel));
         }
         vm.assume(length > 1);
