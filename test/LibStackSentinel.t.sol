@@ -11,65 +11,33 @@ contract LibStackSentinelTest is Test {
     using LibPointer for Pointer;
     using LibStackSentinel for Pointer;
 
-    /// Discovered during flow testing. Would revert with missing sentinel and
-    /// length of b was 3 instead of 0.
-    function testConsumeSentinelTuplesRegression0() public {
-        Sentinel sentinel =
-            Sentinel.wrap(115183058774379759847873638693462432260838474092724525396123647190314935293775);
-        uint256[] memory stack = new uint256[](22);
-        uint256[4][] memory a;
-        uint256[4][] memory b;
-        uint256[5][] memory c;
-
-        stack[0] = 115183058774379759847873638693462432260838474092724525396123647190314935293775;
-        stack[1] = 642829559307850963015472508762062935916233390536;
-        stack[2] = 845144691605623761611895262923086603930318432472;
-        stack[3] = 1234;
-        stack[4] = 790541044196308479814548981703200609474602451736;
-        stack[5] = 10000000000000000000;
-        stack[6] = 1050292306917326452020632068237092216166216650590;
-        stack[7] = 10000000000000000000;
-        stack[8] = 5000000000000000000;
-        stack[9] = 86400;
-        stack[10] = 0;
-        stack[11] = 115183058774379759847873638693462432260838474092724525396123647190314935293775;
-        stack[12] = 115183058774379759847873638693462432260838474092724525396123647190314935293775;
-        stack[13] = 115183058774379759847873638693462432260838474092724525396123647190314935293775;
-        stack[14] = 790541044196308479814548981703200609474602451736;
-        stack[15] = 642829559307850963015472508762062935916233390536;
-        stack[16] = 845144691605623761611895262923086603930318432472;
-        stack[17] = 10000000000000000000;
-        stack[18] = 1050292306917326452020632068237092216166216650590;
-        stack[19] = 845144691605623761611895262923086603930318432472;
-        stack[20] = 642829559307850963015472508762062935916233390536;
-        stack[21] = 10000000000000000000;
-
-        uint256[] memory allocateMoreMemory = new uint256[](5);
+    /// We can read multiple sentinels from the stack, and each time we consume
+    /// we stop at the first discovered sentinel.
+    function testConsumeSentinelTuplesMultiple(uint256[] memory stack, Sentinel sentinel, uint8 length) public {
+        for (uint256 i = 0; i < stack.length; i++) {
+            vm.assume(stack[i] != Sentinel.unwrap(sentinel));
+        }
+        vm.assume(length > 1);
+        vm.assume(stack.length % length == 0);
+        for (uint256 i = 0; i < stack.length; i += length) {
+            stack[i] = Sentinel.unwrap(sentinel);
+        }
 
         Pointer stackBottom = stack.dataPointer();
         Pointer stackTop = stack.endPointer();
-
         Pointer tuplesPointer;
-        (stackTop, tuplesPointer) = stackBottom.consumeSentinelTuples(stackTop, sentinel, 4);
 
-        assembly ("memory-safe") {
-            a := tuplesPointer
+        uint256 count = 0;
+        while (Pointer.unwrap(stackTop) > Pointer.unwrap(stackBottom)) {
+            Pointer stackTopBefore = stackTop;
+            (stackTop, tuplesPointer) = stackBottom.consumeSentinelTuples(stackTop, sentinel, length - 1);
+            assertEq(Pointer.unwrap(stackTopBefore) - Pointer.unwrap(stackTop), uint256(length) * 0x20);
+            // Length of tuples should be 1 because length - 1 is the _size_ of
+            // each tuple item.
+            assertEq(tuplesPointer.unsafeReadWord(), 1);
+            count++;
         }
-        assertEq(a.length, 2);
-
-        (stackTop, tuplesPointer) = stackBottom.consumeSentinelTuples(stackTop, sentinel, 4);
-
-        assembly ("memory-safe") {
-            b := tuplesPointer
-        }
-        assertEq(b.length, 0);
-
-        (stackTop, tuplesPointer) = stackBottom.consumeSentinelTuples(stackTop, sentinel, 5);
-
-        assembly ("memory-safe") {
-            c := tuplesPointer
-        }
-        assertEq(c.length, 0);
+        assertEq(count * length, stack.length);
     }
 
     function testConsumeSentinelTuples(uint256[] memory stack, Sentinel sentinel, uint8 sentinelIndex) public {
