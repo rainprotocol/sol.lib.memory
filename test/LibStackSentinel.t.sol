@@ -11,6 +11,36 @@ contract LibStackSentinelTest is Test {
     using LibPointer for Pointer;
     using LibStackSentinel for Pointer;
 
+    function testConsumeSentinelTuplesMultiSize(uint256[] memory stack, Sentinel sentinel, uint8 lengthA, uint8 lengthB)
+        public
+    {
+        for (uint256 i = 0; i < stack.length; i++) {
+            //slither-disable-next-line calls-loop
+            vm.assume(stack[i] != Sentinel.unwrap(sentinel));
+        }
+        vm.assume(lengthA > 1);
+        vm.assume(lengthB > 1);
+        vm.assume(stack.length >= uint256(lengthA) + uint256(lengthB));
+
+        stack[stack.length - lengthA] = Sentinel.unwrap(sentinel);
+        stack[stack.length - (lengthA + lengthB)] = Sentinel.unwrap(sentinel);
+
+        Pointer stackBottom = stack.dataPointer();
+        (Pointer stackTopA, Pointer tuplesPointerA) =
+            stackBottom.consumeSentinelTuples(stack.endPointer(), sentinel, lengthA - 1);
+        (Pointer stackTopB, Pointer tuplesPointerB) =
+            stackBottom.consumeSentinelTuples(stackTopA, sentinel, lengthB - 1);
+
+        assertEq(Pointer.unwrap(stack.endPointer().unsafeSubWords(lengthA)), Pointer.unwrap(stackTopA));
+        assertEq(Pointer.unwrap(stack.endPointer().unsafeSubWords(lengthA + lengthB)), Pointer.unwrap(stackTopB));
+
+        assertEq(tuplesPointerA.unsafeReadWord(), 1);
+        assertEq(tuplesPointerB.unsafeReadWord(), 1);
+
+        assertEq(Pointer.unwrap(stackTopA.unsafeAddWord()), tuplesPointerA.unsafeAddWord().unsafeReadWord());
+        assertEq(Pointer.unwrap(stackTopB.unsafeAddWord()), tuplesPointerB.unsafeAddWord().unsafeReadWord());
+    }
+
     /// We can read multiple sentinels from the stack, and each time we consume
     /// we stop at the first discovered sentinel.
     function testConsumeSentinelTuplesMultiple(uint256[] memory stack, Sentinel sentinel, uint8 length) public {
