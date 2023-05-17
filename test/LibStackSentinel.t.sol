@@ -11,34 +11,39 @@ contract LibStackSentinelTest is Test {
     using LibPointer for Pointer;
     using LibStackSentinel for Pointer;
 
-    function testConsumeSentinelTuplesMultiSize(uint256[] memory stack, Sentinel sentinel, uint8 lengthA, uint8 lengthB)
-        public
-    {
+    function testConsumeSentinelTuplesMultiSize(
+        uint256[] memory stack,
+        Sentinel sentinel,
+        uint8 lengthAlpha,
+        uint8 lengthBravo
+    ) public {
         for (uint256 i = 0; i < stack.length; i++) {
             //slither-disable-next-line calls-loop
             vm.assume(stack[i] != Sentinel.unwrap(sentinel));
         }
-        vm.assume(lengthA > 1);
-        vm.assume(lengthB > 1);
-        vm.assume(stack.length >= uint256(lengthA) + uint256(lengthB));
+        vm.assume(lengthAlpha > 1);
+        vm.assume(lengthBravo > 1);
+        vm.assume(stack.length >= uint256(lengthAlpha) + uint256(lengthBravo));
 
-        stack[stack.length - lengthA] = Sentinel.unwrap(sentinel);
-        stack[stack.length - (lengthA + lengthB)] = Sentinel.unwrap(sentinel);
+        stack[stack.length - lengthAlpha] = Sentinel.unwrap(sentinel);
+        stack[stack.length - (lengthAlpha + lengthBravo)] = Sentinel.unwrap(sentinel);
 
         Pointer stackBottom = stack.dataPointer();
-        (Pointer stackTopA, Pointer tuplesPointerA) =
-            stackBottom.consumeSentinelTuples(stack.endPointer(), sentinel, lengthA - 1);
-        (Pointer stackTopB, Pointer tuplesPointerB) =
-            stackBottom.consumeSentinelTuples(stackTopA, sentinel, lengthB - 1);
+        (Pointer stackTopAlpha, Pointer tuplesPointerAlpha) =
+            stackBottom.consumeSentinelTuples(stack.endPointer(), sentinel, lengthAlpha - 1);
+        (Pointer stackTopBravo, Pointer tuplesPointerBravo) =
+            stackBottom.consumeSentinelTuples(stackTopAlpha, sentinel, lengthBravo - 1);
 
-        assertEq(Pointer.unwrap(stack.endPointer().unsafeSubWords(lengthA)), Pointer.unwrap(stackTopA));
-        assertEq(Pointer.unwrap(stack.endPointer().unsafeSubWords(lengthA + lengthB)), Pointer.unwrap(stackTopB));
+        assertEq(Pointer.unwrap(stack.endPointer().unsafeSubWords(lengthAlpha)), Pointer.unwrap(stackTopAlpha));
+        assertEq(
+            Pointer.unwrap(stack.endPointer().unsafeSubWords(lengthAlpha + lengthBravo)), Pointer.unwrap(stackTopBravo)
+        );
 
-        assertEq(tuplesPointerA.unsafeReadWord(), 1);
-        assertEq(tuplesPointerB.unsafeReadWord(), 1);
+        assertEq(tuplesPointerAlpha.unsafeReadWord(), 1);
+        assertEq(tuplesPointerBravo.unsafeReadWord(), 1);
 
-        assertEq(Pointer.unwrap(stackTopA.unsafeAddWord()), tuplesPointerA.unsafeAddWord().unsafeReadWord());
-        assertEq(Pointer.unwrap(stackTopB.unsafeAddWord()), tuplesPointerB.unsafeAddWord().unsafeReadWord());
+        assertEq(Pointer.unwrap(stackTopAlpha.unsafeAddWord()), tuplesPointerAlpha.unsafeAddWord().unsafeReadWord());
+        assertEq(Pointer.unwrap(stackTopBravo.unsafeAddWord()), tuplesPointerBravo.unsafeAddWord().unsafeReadWord());
     }
 
     /// We can read multiple sentinels from the stack, and each time we consume
