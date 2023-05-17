@@ -169,10 +169,9 @@ contract LibStackSentinelTest is Test {
     function testConsumeSentinelTuplesInitialStateUnderflowError(Pointer lower, Pointer upper, Sentinel sentinel)
         public
     {
-        vm.assume(Pointer.unwrap(lower) >= 0x80);
         vm.assume(Pointer.unwrap(upper) < Pointer.unwrap(lower));
 
-        vm.expectRevert(abi.encodeWithSelector(InitialStateUnderflow.selector, lower, upper));
+        vm.expectRevert(abi.encodeWithSelector(MissingSentinel.selector, sentinel));
         (Pointer sentinelPointer, Pointer tuplesPointer) = lower.consumeSentinelTuples(upper, sentinel, 2);
         (sentinelPointer);
         (tuplesPointer);

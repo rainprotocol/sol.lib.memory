@@ -3,13 +3,67 @@ pragma solidity ^0.8.18;
 
 import "./LibPointer.sol";
 
-error ZeroStepSize();
-
-error InitialStateUnderflow(Pointer lower, Pointer upper);
+/// Thrown when the sentinel cannot be found. This can be because the sentinel
+/// was not in stack, but also if the upper pointer is below the lower, or the
+/// sentinel is in the stack but not aligned with the tuples size.
+/// @param sentinel The sentinel that was not found.
 error MissingSentinel(Sentinel sentinel);
 
+/// > In computer programming, a sentinel value (also referred to as a flag
+/// > value, trip value, rogue value, signal value, or dummy data)[1] is a
+/// > special value in the context of an algorithm which uses its presence as a
+/// > condition of termination, typically in a loop or recursive algorithm.
+/// >
+/// > The sentinel value is a form of in-band data that makes it possible to
+/// > detect the end of the data when no out-of-band data (such as an explicit
+/// > size indication) is provided. The value should be selected in such a way
+/// > that it is guaranteed to be distinct from all legal data values since
+/// > otherwise, the presence of such values would prematurely signal the end of
+/// > the data (the semipredicate problem).
+/// >
+/// > - [Wikipedia](https://en.wikipedia.org/wiki/Sentinel_value)
 type Sentinel is uint256;
 
+/// Rainlang has no dynamic list data type as every stack item MUST be explicit
+/// in the structure of the code itself. While it would be possible for users to
+/// manually code length prefixes into the stack, this would be error prone and
+/// generally hostile to the overall DX. Instead we can allow sentinels as an
+/// option that is merely awkward rather than downright pathological.
+///
+/// Rainlang authors can use a single sentinel value that is constant across all
+/// their expressions rather than a calculated length prefix. This value can even
+/// be aliased in onchain metadata and referenced by name for ease of use. The
+/// calling contract defines and consumes sentinels, so the expression author
+/// does not need to be aware of or have control over any subtleties in choice of
+/// sentinel.
+///
+/// The main tradeoffs for sentinel terminated lists on a stack are similar to
+/// null-terminated strings,
+/// as per [Wikipedia](https://en.wikipedia.org/wiki/Null-terminated_string)
+///
+/// > While simple to implement, this representation has been prone to errors and
+/// > performance problems.
+///
+/// This library attempts to mitigate potential implementation errors with a
+/// standard implementation that has been fuzzed and optimized for building lists
+/// of tuples (and therefore lists of structs via. a direct type cast). The main
+/// implementation issues in null-terminated strings are avoided:
+///
+/// - Using any sentinel value other than `0`, such as the hash of some well
+///   known string, will avoid misinterpreting unallocated memory as a sentinel.
+/// - Any underflows manifest as either a "missing sentinel" or infinite loop,
+///   which will revert either way due to an explicit check or gas limits.
+/// - Given that a sentinel is `uint256` it is possible to construct a value that
+///   is very unlikely to collide with real values in the implementation domain.
+/// - Well behaved integrity checks will ensure the memory for the sentinel is
+///   allocated as any other stack item.
+///
+/// Sadly there is no way to avoid the O(n) performance overhead of searching for
+/// a sentinel vs. O(1) of reading a length prefix directly. This is somewhat
+/// mitigated by the nature of a hand-written stack being small in
+/// computing terms, and that each item being iterated over is an entire struct
+/// rather than individual stack values. Assembly is used to keep the looping
+/// overhead to a minimum.
 library LibStackSentinel {
     using LibStackSentinel for Pointer;
 
@@ -51,9 +105,6 @@ library LibStackSentinel {
         pure
         returns (Pointer sentinelPointer, Pointer tuplesPointer)
     {
-        // Upper must not be less than lower.
-        if (Pointer.unwrap(upper) < Pointer.unwrap(lower)) revert InitialStateUnderflow(lower, upper);
-
         // Each tuple takes this much space in memory.
         uint256 size;
 
@@ -70,6 +121,7 @@ library LibStackSentinel {
             }
         }
 
+        // We revert if the sentinel was not found.
         if (Pointer.unwrap(sentinelPointer) == 0) {
             revert MissingSentinel(sentinel);
         }
