@@ -14,27 +14,33 @@ library LibMemCpy {
     /// sufficient memory is allocated and reading/writing the requested number
     /// of bytes from/to the requested locations WILL NOT corrupt memory in the
     /// opinion of solidity or other subsequent read/write operations.
-    /// @param source The starting pointer to read from.
-    /// @param target The starting pointer to write to.
+    /// @param sourceCursor The starting pointer to read from.
+    /// @param targetCursor The starting pointer to write to.
     /// @param length The number of bytes to read/write.
-    function unsafeCopyBytesTo(Pointer source, Pointer target, uint256 length) internal pure {
+    function unsafeCopyBytesTo(Pointer sourceCursor, Pointer targetCursor, uint256 length) internal pure {
         assembly ("memory-safe") {
-            for {} iszero(lt(length, 0x20)) {
-                length := sub(length, 0x20)
-                source := add(source, 0x20)
-                target := add(target, 0x20)
-            } { mstore(target, mload(source)) }
+            // Precalculating the end here, rather than tracking the remaining
+            // length each iteration uses relatively more gas for less data, but
+            // scales better for more data. Copying 1-2 words is ~30 gas more
+            // expensive but copying 3+ words favours a precalculated end point
+            // increasingly for more data.
+            let m := mod(length, 0x20)
+            let end := add(sourceCursor, sub(length, m))
+            for {} lt(sourceCursor, end) {
+                sourceCursor := add(sourceCursor, 0x20)
+                targetCursor := add(targetCursor, 0x20)
+            } { mstore(targetCursor, mload(sourceCursor)) }
 
-            if iszero(iszero(length)) {
+            if iszero(iszero(m)) {
                 //slither-disable-next-line incorrect-shift
-                let mask_ := shr(mul(length, 8), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)
+                let mask_ := shr(mul(m, 8), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)
                 // preserve existing bytes
                 mstore(
-                    target,
+                    targetCursor,
                     or(
                         // input
-                        and(mload(source), not(mask_)),
-                        and(mload(target), mask_)
+                        and(mload(sourceCursor), not(mask_)),
+                        and(mload(targetCursor), mask_)
                     )
                 )
             }
