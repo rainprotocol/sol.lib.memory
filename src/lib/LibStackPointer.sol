@@ -5,6 +5,9 @@ import "./LibUint256Array.sol";
 import "./LibMemory.sol";
 import "./LibMemCpy.sol";
 
+/// Throws if a stack pointer is not aligned to 32 bytes.
+error UnalignedStackPointer(Pointer pointer);
+
 /// @title LibStackPointer
 /// @notice A stack `Pointer` is still just a pointer to some memory, but we are
 /// going to treat it like it is pointing to a stack data structure. That means
@@ -137,19 +140,25 @@ library LibStackPointer {
 
     /// Convert two stack pointer values to a single stack index. A stack index
     /// is the distance in 32 byte increments between two stack pointers. The
-    /// calculations assumes the two stack pointers are aligned.
-    ///
-    /// The caller MUST ensure the alignment of both values. The calculation is
-    /// unchecked and MAY underflow.
-    ///
-    /// The caller MUST ensure that the upper is greater or equal the lower.
+    /// calculations require the two stack pointers are aligned. If the pointers
+    /// are not aligned, the function will revert.
     ///
     /// @param lower The lower of the two values.
     /// @param upper The higher of the two values.
-    /// @return The stack index as 32 byte distance between the top and bottom.
-    function unsafeToIndex(Pointer lower, Pointer upper) internal pure returns (uint256) {
+    /// @return The stack index as 32 byte words distance between the top and
+    /// bottom. Negative if `lower` is above `upper`.
+    function toIndexSigned(Pointer lower, Pointer upper) internal pure returns (int256) {
         unchecked {
-            return (Pointer.unwrap(upper) - Pointer.unwrap(lower)) / 0x20;
+            if (Pointer.unwrap(lower) % 0x20 != 0) {
+                revert UnalignedStackPointer(lower);
+            }
+            if (Pointer.unwrap(upper) % 0x20 != 0) {
+                revert UnalignedStackPointer(upper);
+            }
+            // Dividing by 0x20 before casting to a signed int avoids the case
+            // where the difference between the two pointers is greater than
+            // `type(int256).max` and would overflow the signed int.
+            return int256(Pointer.unwrap(upper) / 0x20) - int256(Pointer.unwrap(lower) / 0x20);
         }
     }
 }

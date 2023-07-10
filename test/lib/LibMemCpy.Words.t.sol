@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: CAL
-pragma solidity ^0.8.18;
+pragma solidity =0.8.18;
 
 import "forge-std/Test.sol";
-import "../src/LibMemCpy.sol";
-import "../src/LibUint256Array.sol";
-import "../src/LibPointer.sol";
+
+import "src/lib/LibMemCpy.sol";
+import "src/lib/LibUint256Array.sol";
+import "src/lib/LibPointer.sol";
 
 contract LibMemCpyWordsTest is Test {
     using LibPointer for Pointer;

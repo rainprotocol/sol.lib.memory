@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: CAL
-pragma solidity ^0.8.18;
+pragma solidity =0.8.18;
 
 import "forge-std/Test.sol";
-import "../src/LibMemory.sol";
+
+import "src/lib/LibMemory.sol";
 
 contract LibMemoryTest is Test {
     // Just fuzz to get some things in memory.
