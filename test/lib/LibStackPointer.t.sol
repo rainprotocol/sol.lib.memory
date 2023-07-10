@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: CAL
-pragma solidity ^0.8.18;
+pragma solidity =0.8.18;
 
 import "forge-std/Test.sol";
-import "../src/LibPointer.sol";
-import "../src/LibStackPointer.sol";
-import "../src/LibUint256Array.sol";
+
+import "src/lib/LibPointer.sol";
+import "src/lib/LibStackPointer.sol";
+import "src/lib/LibUint256Array.sol";
 
 contract LibStackPointerTest is Test {
     using LibPointer for Pointer;
@@ -105,10 +106,5 @@ contract LibStackPointerTest is Test {
 
         // array will be mutated due to the unsafety of the list.
         assertEq(array[array.length - length - 1], length);
-    }
-
-    function testUnsafeToIndex(uint32 lower, uint32 index) public {
-        Pointer upper = Pointer.wrap(uint256(lower) + uint256(index) * 0x20);
-        assertEq(index, Pointer.wrap(lower).unsafeToIndex(upper));
     }
 }

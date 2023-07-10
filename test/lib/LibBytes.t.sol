@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: CAL
-pragma solidity ^0.8.18;
+pragma solidity =0.8.18;
 
 import "forge-std/Test.sol";
-import "../src/LibBytes.sol";
-import "../src/LibMemCpy.sol";
+import "src/lib/LibBytes.sol";
+import "src/lib/LibMemCpy.sol";
 
 contract LibBytesTest is Test {
     using LibBytes for bytes;

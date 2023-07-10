@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: CAL
-pragma solidity ^0.8.18;
+pragma solidity =0.8.18;
 
 import "forge-std/Test.sol";
-import "../src/LibUint256Array.sol";
-import "../src/LibUint256Matrix.sol";
-import "./LibUint256ArraySlow.sol";
-import "./LibUint256MatrixSlow.sol";
-import "../src/LibMemory.sol";
+import "src/lib/LibUint256Array.sol";
+import "src/lib/LibUint256Matrix.sol";
+import "src/lib/LibMemory.sol";
+
+import "test/lib/LibUint256ArraySlow.sol";
+import "test/lib/LibUint256MatrixSlow.sol";
 
 contract LibUint256ArrayMatrixFromTest is Test {
     using LibUint256Array for uint256;

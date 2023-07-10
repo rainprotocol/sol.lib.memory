@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: CAL
-pragma solidity ^0.8.18;
+pragma solidity =0.8.18;
 
 import "forge-std/Test.sol";
-import "../src/LibPointer.sol";
-import "../src/LibStackPointer.sol";
-import "../src/LibStackSentinel.sol";
+
+import "src/lib/LibPointer.sol";
+import "src/lib/LibStackPointer.sol";
+import "src/lib/LibStackSentinel.sol";
 
 contract LibStackSentinelTest is Test {
     using LibUint256Array for uint256[];

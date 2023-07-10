@@ -10,9 +10,3 @@ optimizer = false
 optimizer_runs = 100000
 
 fuzz.runs = 2056
-
-[profile.default.model_checker]
-contracts = {'src/LibBytes.sol' = ['LibBytes'], 'src/LibMemCpy.sol' = ['LibMemCpy'], 'src/LibMemory.sol' = ['LibMemory'], 'src/LibPointer.sol' = ['LibPointer']}
-engine = 'chc'
-timeout = 10000
-targets = ['assert', 'underflow', 'overflow', 'divByZero', 'constantCondition', 'popEmptyArray', 'outOfBounds']

@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: CAL
-pragma solidity ^0.8.18;
+pragma solidity =0.8.18;
 
 import "forge-std/Test.sol";
-import "../src/LibUint256Array.sol";
-import "./LibUint256ArraySlow.sol";
-import "../src/LibMemory.sol";
+import "src/lib/LibUint256Array.sol";
+import "src/lib/LibMemory.sol";
+
+import "test/lib/LibUint256ArraySlow.sol";
 
 contract LibUint256ArrayTruncateTest is Test {
     function testTruncate(uint256[] memory a_, uint256 newLength_) public {

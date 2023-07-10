@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: CAL
-pragma solidity ^0.8.18;
+pragma solidity =0.8.18;
 
 import "forge-std/Test.sol";
-import "../src/LibPointer.sol";
-import "../src/LibBytes.sol";
+
+import "src/lib/LibPointer.sol";
+import "src/lib/LibBytes.sol";
 
 contract LibPointerTest is Test {
     using LibPointer for Pointer;
